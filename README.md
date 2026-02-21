@@ -57,19 +57,6 @@ ReadWell is a **Progressive Web App (PWA)**. No app store needed!
 
 ---
 
-## 🚀 Deploying on GitHub Pages (Free)
-
-1. Create a GitHub account at [github.com](https://github.com)
-2. Create a new **public** repository named `readwell`
-3. Upload these files:
-   - `index.html`
-   - `manifest.json`
-   - `sw.js`
-4. Go to **Settings → Pages**
-5. Set source to **main branch** → Save
-6. Your app will be live at:
-   `https://yourusername.github.io/readwell`
-
 ---
 
 ## 🎨 Color Schemes
