@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0a1628"/>
+  <meta name="description" content="ReadWell — Read freely. Write boldly."/>
+  <link rel="manifest" href="manifest.json"/>
+  <title>ReadWell</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#0a1628;--bg2:#1a2a4a;--teal:#2de0c0;--teal-dim:#0a9e85;
+      --ashen:#c8d8e0;--text:#e8f0f5;--text-dim:#8ab8c8;
+      --card:rgba(255,255,255,0.04);--card-border:rgba(45,224,192,0.15);
+      --danger:#e05555;--gold:#f0c060;
+    }
+    body.spring{--bg:#0d1f0f;--bg2:#1a3320;--teal:#4ade80;--teal-dim:#22c55e;}
+    body.summer{--bg:#0d1a2a;--bg2:#1a2f44;--teal:#38bdf8;--teal-dim:#0ea5e9;}
+    body.autumn{--bg:#1a0f05;--bg2:#2d1a08;--teal:#f97316;--teal-dim:#ea580c;}
+    body.winter{--bg:#080e1a;--bg2:#0f1829;--teal:#93c5fd;--teal-dim:#60a5fa;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Lora',serif;min-height:100vh;transition:background 0.5s;}
+
+    /* SPLASH */
+    #splash{position:fixed;inset:0;background:linear-gradient(135deg,var(--bg),var(--bg2));display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.8s,visibility 0.8s;}
+    #splash.hide{opacity:0;visibility:hidden;}
+    .splash-stars{position:absolute;inset:0;pointer-events:none;}
+    .splash-star{position:absolute;background:var(--teal);border-radius:50%;animation:twinkle 3s infinite alternate;}
+    @keyframes twinkle{0%{opacity:0.1}100%{opacity:0.5}}
+    .bounce-text{display:flex;align-items:flex-end;gap:1px;}
+    .bounce-text span{display:inline-block;font-family:'Cinzel',serif;font-size:clamp(48px,12vw,90px);font-weight:700;color:var(--teal);text-shadow:0 0 10px rgba(45,224,192,0.7),0 12px 20px rgba(0,0,0,0.6);animation:bounce 1.2s infinite;}
+    .bounce-text span:nth-child(1){animation-delay:0s}.bounce-text span:nth-child(2){animation-delay:.08s}.bounce-text span:nth-child(3){animation-delay:.16s}.bounce-text span:nth-child(4){animation-delay:.24s}.bounce-text span:nth-child(5){animation-delay:.32s}.bounce-text span:nth-child(6){animation-delay:.4s}.bounce-text span:nth-child(7){animation-delay:.48s}.bounce-text span:nth-child(8){animation-delay:.56s}
+    @keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-28px)}60%{transform:translateY(-18px)}}
+    .shadow-row{display:flex;gap:1px;margin-top:4px;}
+    .lshadow{background:rgba(45,224,192,0.18);border-radius:50%;filter:blur(3px);animation:shadowPulse 1.2s infinite;}
+    .lshadow:nth-child(1){animation-delay:0s}.lshadow:nth-child(2){animation-delay:.08s}.lshadow:nth-child(3){animation-delay:.16s}.lshadow:nth-child(4){animation-delay:.24s}.lshadow:nth-child(5){animation-delay:.32s}.lshadow:nth-child(6){animation-delay:.4s}.lshadow:nth-child(7){animation-delay:.48s}.lshadow:nth-child(8){animation-delay:.56s}
+    @keyframes shadowPulse{0%,100%{width:44px;height:10px;opacity:.5}40%{width:20px;height:5px;opacity:.12}}
+    .splash-tagline{margin-top:20px;font-size:13px;color:var(--text-dim);letter-spacing:6px;font-style:italic;opacity:0;animation:fadeIn 1s ease forwards 1s;}
+    .splash-dots{display:flex;gap:8px;margin-top:36px;opacity:0;animation:fadeIn 1s ease forwards 1.4s;}
+    .sdot{width:8px;height:8px;background:var(--teal);border-radius:50%;animation:dotB 1s infinite;}
+    .sdot:nth-child(2){animation-delay:.2s}.sdot:nth-child(3){animation-delay:.4s}
+    @keyframes dotB{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-10px);opacity:1}}
+    @keyframes fadeIn{to{opacity:1}}
+    .cacc{position:absolute;width:40px;height:40px;opacity:.3;}
+    .cacc.tl{top:20px;left:20px;border-top:2px solid var(--teal);border-left:2px solid var(--teal);}
+    .cacc.tr{top:20px;right:20px;border-top:2px solid var(--teal);border-right:2px solid var(--teal);}
+    .cacc.bl{bottom:20px;left:20px;border-bottom:2px solid var(--teal);border-left:2px solid var(--teal);}
+    .cacc.br{bottom:20px;right:20px;border-bottom:2px solid var(--teal);border-right:2px solid var(--teal);}
+
+    /* LOGIN MODAL */
+    #loginModal{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:8888;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+    #loginModal.show{display:flex!important;}
+    /* MSG MODAL fix */
+    #msgModal{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:7777;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+    #msgModal.show{display:flex!important;}
+    .login-box{background:linear-gradient(145deg,#0f1e35,#1a2d4a);border:1px solid var(--card-border);border-radius:20px;padding:40px 36px;width:min(420px,92vw);animation:slideUp .4s ease;}
+    @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .login-logo{font-family:'Cinzel',serif;font-size:28px;color:var(--teal);text-align:center;margin-bottom:6px;text-shadow:0 0 15px rgba(45,224,192,.5);}
+    .login-sub{text-align:center;color:var(--text-dim);font-size:13px;margin-bottom:24px;font-style:italic;}
+    .role-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+    .role-tab{flex:1;min-width:80px;padding:9px 8px;border:1px solid var(--card-border);background:transparent;color:var(--text-dim);border-radius:10px;cursor:pointer;font-size:12px;transition:all .2s;}
+    .role-tab.active,.role-tab:hover{background:var(--teal);color:#0a1628;border-color:var(--teal);font-weight:700;}
+    .fg{margin-bottom:14px;}
+    .fg label{display:block;font-size:11px;color:var(--text-dim);margin-bottom:5px;letter-spacing:1px;text-transform:uppercase;}
+    .fg input{width:100%;padding:12px 16px;background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Lora',serif;font-size:14px;outline:none;transition:border .2s;}
+    .fg input:focus{border-color:var(--teal);}
+    .btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--teal),var(--teal-dim));border:none;border-radius:12px;color:#0a1628;font-family:'Cinzel',serif;font-size:15px;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-top:6px;}
+    .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(45,224,192,.4);}
+    .login-switch{text-align:center;margin-top:14px;font-size:13px;color:var(--text-dim);}
+    .login-switch a{color:var(--teal);cursor:pointer;}
+    .login-error{color:var(--danger);font-size:13px;text-align:center;margin-top:8px;display:none;}
+
+    /* TOP NAV */
+    #topNav{position:sticky;top:0;z-index:999;background:rgba(10,22,40,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--card-border);padding:10px 16px;display:flex;align-items:center;gap:10px;}
+    .nav-logo{font-family:'Cinzel',serif;font-size:19px;color:var(--teal);cursor:pointer;white-space:nowrap;text-shadow:0 0 10px rgba(45,224,192,.4);}
+    .nav-search{flex:1;max-width:380px;background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:30px;padding:8px 16px;color:var(--text);font-family:'Lora',serif;font-size:14px;outline:none;transition:border .2s;}
+    .nav-search:focus{border-color:var(--teal);}
+    .nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+    .nbtn{padding:7px 14px;border-radius:20px;border:1px solid var(--card-border);background:transparent;color:var(--text);cursor:pointer;font-size:12px;transition:all .2s;white-space:nowrap;font-family:'Lora',serif;}
+    .nbtn:hover,.nbtn.active{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .nbtn.ww{background:linear-gradient(135deg,#1a3a2a,#0d2a1a);border-color:#4ade80;color:#4ade80;}
+    .nbtn.ww:hover{background:#4ade80;color:#0a1628;}
+    .nav-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dim));display:flex;align-items:center;justify-content:center;font-weight:700;color:#0a1628;cursor:pointer;font-size:13px;border:2px solid var(--teal);flex-shrink:0;position:relative;}
+    .nav-av:hover .av-drop{display:block;}
+    .av-drop{display:none;position:absolute;top:42px;right:0;background:#0f1e35;border:1px solid var(--card-border);border-radius:12px;min-width:160px;overflow:hidden;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+    .av-drop a{display:block;padding:12px 16px;font-size:13px;color:var(--text);cursor:pointer;transition:background 0.2s;font-family:'Lora',serif;}
+    .av-drop a:hover{background:rgba(45,224,192,0.1);color:var(--teal);}
+    .av-drop a.lo{color:var(--danger);}
+    .av-drop a.lo:hover{background:rgba(224,85,85,0.1);}
+
+    /* PAGES */
+    .page{display:none;min-height:calc(100vh - 58px);}
+    .page.active{display:block;animation:fadeIn .3s ease;}
+
+    /* HOME */
+    .hero{background:linear-gradient(135deg,var(--bg),var(--bg2),rgba(45,224,192,.06));padding:50px 20px 36px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(45,224,192,.08) 0%,transparent 70%);pointer-events:none;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(28px,6vw,56px);line-height:1.2;margin-bottom:14px;}
+    .hero h1 span{color:var(--teal);}
+    .hero p{color:var(--text-dim);font-size:15px;max-width:480px;margin:0 auto 26px;line-height:1.7;}
+    .hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+    .btn-p{padding:13px 26px;background:linear-gradient(135deg,var(--teal),var(--teal-dim));border:none;border-radius:30px;color:#0a1628;font-family:'Cinzel',serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;}
+    .btn-p:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(45,224,192,.4);}
+    .btn-s{padding:13px 26px;background:transparent;border:1px solid var(--teal);border-radius:30px;color:var(--teal);font-family:'Cinzel',serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;}
+    .btn-s:hover{background:rgba(45,224,192,.1);}
+    .sec{padding:24px 16px;max-width:1100px;margin:0 auto;}
+    .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+    .sec-title{font-family:'Playfair Display',serif;font-size:20px;}
+    .sec-title span{color:var(--teal);}
+    .see-all{color:var(--teal);font-size:13px;cursor:pointer;}
+    .genre-pills{display:flex;gap:7px;flex-wrap:wrap;padding:14px 16px;}
+    .gp{padding:6px 14px;border-radius:18px;border:1px solid var(--card-border);background:var(--card);color:var(--text-dim);font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .gp:hover,.gp.active{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+    .book-card{background:var(--card);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative;}
+    .book-card:hover{transform:translateY(-5px);border-color:var(--teal);box-shadow:0 10px 28px rgba(45,224,192,.15);}
+    .book-cover{height:190px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg2),rgba(45,224,192,.08));position:relative;}
+    .book-rbadge{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.7);border:1px solid var(--gold);color:var(--gold);font-size:9px;padding:3px 7px;border-radius:8px;z-index:1;font-weight:700;}
+    .book-starred-badge{position:absolute;top:7px;left:7px;background:linear-gradient(135deg,var(--gold),#e0a020);color:#0a1628;font-size:9px;padding:3px 7px;border-radius:8px;z-index:1;font-weight:700;}
+    .book-info{padding:10px 12px;}
+    .book-title{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;line-height:1.3;}
+    .book-author{font-size:11px;color:var(--text-dim);}
+    .book-meta{display:flex;gap:8px;margin-top:6px;font-size:10px;color:var(--text-dim);}
+
+    /* STARRED STRIP */
+    .star-strip{background:linear-gradient(135deg,rgba(45,224,192,.07),rgba(45,224,192,.02));border:1px solid var(--card-border);border-radius:16px;padding:18px 20px;margin:16px 16px 8px;display:flex;align-items:center;gap:18px;overflow:hidden;position:relative;}
+    .star-strip::before{content:'⭐ FEATURED';position:absolute;top:10px;right:14px;font-size:9px;color:var(--gold);letter-spacing:2px;font-weight:700;}
+    .hl-cover{font-size:56px;flex-shrink:0;}
+    .hl-info h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:5px;}
+    .hl-info p{color:var(--text-dim);font-size:13px;line-height:1.6;margin-bottom:10px;}
+    .hl-tags{display:flex;gap:5px;flex-wrap:wrap;}
+    .hl-tag{padding:3px 9px;background:rgba(45,224,192,.1);border:1px solid var(--teal);color:var(--teal);border-radius:10px;font-size:10px;}
+
+    /* READING */
+    .read-toolbar{position:sticky;top:58px;z-index:100;background:rgba(10,22,40,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--card-border);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .rs-btn{padding:5px 10px;border-radius:7px;border:1px solid var(--card-border);background:transparent;color:var(--text-dim);cursor:pointer;font-size:12px;transition:all .2s;}
+    .rs-btn:hover,.rs-btn.on{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .prog-bar{height:3px;background:rgba(45,224,192,.2);}
+    .prog-fill{height:100%;background:var(--teal);transition:width .3s;}
+    .read-wrap{max-width:700px;margin:0 auto;padding:36px 20px;}
+    .read-wrap.fs-sm{font-size:15px;}.read-wrap.fs-lg{font-size:20px;}.read-wrap.fs-xl{font-size:23px;}
+    .read-wrap.t-sepia{background:#1a1208;color:#c8b090;}.read-wrap.t-light{background:#f0ece4;color:#2a2018;}
+    .read-wrap h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:18px;color:var(--teal);}
+    .read-wrap p{margin-bottom:18px;line-height:1.9;font-size:17px;}
+    .action-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 20px 16px;}
+    .act-btn{display:flex;align-items:center;gap:5px;padding:9px 14px;border-radius:18px;border:1px solid var(--card-border);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;transition:all .2s;font-family:'Lora',serif;}
+    .act-btn:hover{border-color:var(--teal);color:var(--teal);}
+    .act-btn.liked{color:var(--danger);border-color:var(--danger);}
+    .act-btn.bkd{color:var(--gold);border-color:var(--gold);}
+    .tip-box{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px;margin:0 20px 20px;max-width:680px;margin-left:auto;margin-right:auto;}
+    .tip-box h4{font-family:'Cinzel',serif;color:var(--teal);margin-bottom:10px;font-size:14px;}
+    .tip-amts{display:flex;gap:7px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;}
+    .ta{padding:9px 14px;border:1px solid var(--card-border);border-radius:9px;background:transparent;color:var(--text);cursor:pointer;font-size:13px;transition:all .2s;}
+    .ta:hover,.ta.sel{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .tip-btns{display:flex;gap:8px;justify-content:center;}
+    .btn-pp{padding:11px 18px;background:#003087;border:none;border-radius:9px;color:#fff;cursor:pointer;font-size:13px;font-weight:700;}
+    .btn-pp:hover{background:#001f5a;}
+    .btn-cc{padding:11px 18px;background:linear-gradient(135deg,var(--teal),var(--teal-dim));border:none;border-radius:9px;color:#0a1628;cursor:pointer;font-size:13px;font-weight:700;}
+    .chap-nav{display:flex;justify-content:space-between;padding:14px 20px;max-width:700px;margin:0 auto;}
+    .comments-sec{max-width:700px;margin:0 auto;padding:0 20px 40px;}
+    .comments-sec h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:14px;}
+    .cmt-input-wrap{display:flex;gap:8px;margin-bottom:18px;}
+    .cmt-input{flex:1;padding:11px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Lora',serif;font-size:13px;outline:none;resize:none;}
+    .cmt-input:focus{border-color:var(--teal);}
+    .btn-cmt{padding:11px 16px;background:var(--teal);border:none;border-radius:10px;color:#0a1628;cursor:pointer;font-weight:700;font-size:12px;}
+    .cmt{display:flex;gap:10px;margin-bottom:14px;}
+    .cmt-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dim));display:flex;align-items:center;justify-content:center;font-weight:700;color:#0a1628;font-size:12px;flex-shrink:0;}
+    .cmt-body{flex:1;}
+    .cmt-author{font-size:12px;font-weight:600;color:var(--teal);margin-bottom:3px;}
+    .cmt-text{font-size:13px;line-height:1.5;}
+    .cmt-acts{display:flex;gap:10px;margin-top:5px;}
+    .cmt-act{font-size:11px;color:var(--text-dim);cursor:pointer;}
+    .cmt-act:hover{color:var(--teal);}
+
+    /* WRITEWELL */
+    .ww-header{background:linear-gradient(135deg,#0a1f0d,#1a3320);border-bottom:1px solid rgba(74,222,128,.2);padding:28px 20px;text-align:center;}
+    .ww-header h1{font-family:'Cinzel',serif;font-size:26px;color:#4ade80;text-shadow:0 0 15px rgba(74,222,128,.4);margin-bottom:6px;}
+    .ww-header p{color:#86efac;font-size:13px;}
+    .ww-con{max-width:880px;margin:0 auto;padding:26px 16px;}
+    .ed-toolbar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;padding:8px;background:var(--card);border:1px solid var(--card-border);border-radius:8px;}
+    .ed-btn{padding:5px 9px;background:transparent;border:1px solid var(--card-border);border-radius:5px;color:var(--text);cursor:pointer;font-size:12px;transition:all .2s;}
+    .ed-btn:hover{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .ed-area{width:100%;min-height:360px;padding:18px;background:rgba(255,255,255,.03);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Lora',serif;font-size:15px;line-height:1.8;outline:none;resize:vertical;}
+    .ed-area:focus{border-color:#4ade80;}
+    .pub-form{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:16px;}
+    .pub-form .full{grid-column:1/-1;}
+    .pi,.ps{width:100%;padding:11px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:9px;color:var(--text);font-family:'Lora',serif;font-size:13px;outline:none;}
+    .pi:focus,.ps:focus{border-color:#4ade80;}
+    .ps option{background:#0f1e35;}
+    .btn-pub{padding:13px 28px;background:linear-gradient(135deg,#4ade80,#22c55e);border:none;border-radius:11px;color:#0a1628;font-family:'Cinzel',serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;}
+    .btn-pub:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(74,222,128,.4);}
+    .btn-dft{padding:13px 22px;background:transparent;border:1px solid var(--card-border);border-radius:11px;color:var(--text-dim);font-family:'Cinzel',serif;font-size:13px;cursor:pointer;}
+    .dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:26px;}
+    .stat-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:18px;text-align:center;}
+    .stat-num{font-family:'Playfair Display',serif;font-size:26px;color:var(--teal);font-weight:900;}
+    .stat-lbl{font-size:11px;color:var(--text-dim);margin-top:3px;text-transform:uppercase;letter-spacing:1px;}
+
+    /* PROFILE */
+    .prof-hdr{background:linear-gradient(135deg,var(--bg),var(--bg2));padding:36px 20px 26px;border-bottom:1px solid var(--card-border);display:flex;gap:18px;align-items:center;flex-wrap:wrap;max-width:880px;margin:0 auto;}
+    .prof-av{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dim));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#0a1628;border:3px solid var(--teal);flex-shrink:0;}
+    .prof-info h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:5px;}
+    .prof-bio{color:var(--text-dim);font-size:13px;line-height:1.6;margin-bottom:10px;}
+    .prof-stats{display:flex;gap:18px;font-size:12px;}
+    .ps-item strong{color:var(--teal);font-size:15px;display:block;}
+    .ps-item span{color:var(--text-dim);}
+    .btn-follow{padding:9px 22px;background:var(--teal);border:none;border-radius:18px;color:#0a1628;font-weight:700;cursor:pointer;font-size:12px;}
+    .btn-follow.fing{background:transparent;border:1px solid var(--teal);color:var(--teal);}
+    .shelf-tabs{display:flex;gap:0;border-bottom:1px solid var(--card-border);padding:0 16px;max-width:880px;margin:0 auto;overflow-x:auto;}
+    .s-tab{padding:12px 16px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-size:13px;border-bottom:2px solid transparent;transition:all .2s;font-family:'Lora',serif;white-space:nowrap;}
+    .s-tab.active,.s-tab:hover{color:var(--teal);border-bottom-color:var(--teal);}
+
+    /* ADMIN */
+    .admin-hdr{background:linear-gradient(135deg,#1a0505,#2d0a0a);border-bottom:1px solid rgba(224,85,85,.3);padding:22px 20px;}
+    .admin-hdr h1{font-family:'Cinzel',serif;font-size:22px;color:var(--danger);}
+    .admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--card-border);padding:0 16px;overflow-x:auto;}
+    .at{padding:11px 16px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-size:12px;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;font-family:'Lora',serif;}
+    .at.active{color:var(--danger);border-bottom-color:var(--danger);}
+    .admin-con{padding:22px 16px;max-width:960px;margin:0 auto;}
+    .a-sec{display:none;}.a-sec.active{display:block;}
+    .dt{width:100%;border-collapse:collapse;}
+    .dt th{text-align:left;padding:11px 14px;background:rgba(224,85,85,.1);color:var(--danger);font-size:11px;letter-spacing:1px;text-transform:uppercase;}
+    .dt td{padding:11px 14px;border-bottom:1px solid var(--card-border);font-size:13px;}
+    .dt tr:hover td{background:rgba(255,255,255,.02);}
+    .badge{padding:3px 9px;border-radius:8px;font-size:10px;font-weight:700;}
+    .bm{background:rgba(45,224,192,.15);color:var(--teal);}
+    .bu{background:rgba(138,184,200,.15);color:var(--text-dim);}
+    .bb{background:rgba(224,85,85,.15);color:var(--danger);}
+    .btn-ap{padding:5px 12px;background:var(--teal);border:none;border-radius:7px;color:#0a1628;cursor:pointer;font-size:11px;font-weight:700;}
+    .btn-ban{padding:5px 12px;background:rgba(224,85,85,.2);border:1px solid var(--danger);border-radius:7px;color:var(--danger);cursor:pointer;font-size:11px;}
+    .tip-total{font-family:'Playfair Display',serif;font-size:34px;color:var(--gold);margin:16px 0 4px;}
+
+    /* MOD */
+    .mod-hdr{background:linear-gradient(135deg,#0a1020,#1a2035);border-bottom:1px solid rgba(45,224,192,.2);padding:22px 20px;}
+    .mod-hdr h1{font-family:'Cinzel',serif;font-size:21px;color:var(--teal);}
+
+
+    .msg-box{background:linear-gradient(145deg,#0f1e35,#1a2d4a);border:1px solid var(--card-border);border-radius:18px;padding:28px;width:min(440px,92vw);}
+    .msg-box h3{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:14px;color:var(--teal);}
+    .msg-ta{width:100%;padding:13px;background:var(--card);border:1px solid var(--card-border);border-radius:9px;color:var(--text);font-family:'Lora',serif;font-size:13px;outline:none;resize:none;min-height:110px;margin-bottom:14px;}
+    .msg-ta:focus{border-color:var(--teal);}
+    .msg-acts{display:flex;gap:8px;justify-content:flex-end;}
+    .btn-cancel{padding:9px 18px;background:transparent;border:1px solid var(--card-border);border-radius:9px;color:var(--text-dim);cursor:pointer;font-size:12px;}
+    .btn-send{padding:9px 18px;background:var(--teal);border:none;border-radius:9px;color:#0a1628;font-weight:700;cursor:pointer;font-size:12px;}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,var(--teal),var(--teal-dim));color:#0a1628;padding:12px 22px;border-radius:28px;font-weight:700;font-size:13px;z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;}
+    #toast.show{transform:translateX(-50%) translateY(0);}
+
+    /* BOTTOM NAV */
+    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,22,40,.97);border-top:1px solid var(--card-border);z-index:998;padding:7px 0 10px;}
+    .bnav-inner{display:flex;justify-content:space-around;}
+    .bni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:3px 10px;color:var(--text-dim);font-size:10px;transition:color .2s;}
+    .bni.active,.bni:hover{color:var(--teal);}
+    .bni-ico{font-size:20px;}
+
+    @media(max-width:640px){
+      .bnav{display:block;}
+      .page{padding-bottom:68px;}
+      .nav-search{display:none;}
+      .pub-form{grid-template-columns:1fr;}
+    }
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px;}
+    .hidden{display:none!important;}
+  </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-stars" id="splashStars"></div>
+  <div class="cacc tl"></div><div class="cacc tr"></div><div class="cacc bl"></div><div class="cacc br"></div>
+  <div>
+    <div class="bounce-text">
+      <span>R</span><span>e</span><span>a</span><span>d</span><span>W</span><span>e</span><span>l</span><span>l</span>
+    </div>
+    <div class="shadow-row">
+      <div class="lshadow"></div><div class="lshadow"></div><div class="lshadow"></div><div class="lshadow"></div>
+      <div class="lshadow"></div><div class="lshadow"></div><div class="lshadow"></div><div class="lshadow"></div>
+    </div>
+    <p class="splash-tagline">Read freely. Write boldly.</p>
+    <div class="splash-dots"><div class="sdot"></div><div class="sdot"></div><div class="sdot"></div></div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal">
+  <div class="login-box">
+    <div class="login-logo">📖 ReadWell</div>
+    <div class="login-sub">Read freely. Write boldly.</div>
+    <div class="role-tabs">
+      <button class="role-tab active" data-role="user">👤 Reader</button>
+      <button class="role-tab" data-role="writer">✍️ Writer</button>
+      <button class="role-tab" data-role="moderator">🛡 Mod</button>
+      <button class="role-tab" data-role="admin">⚙️ Admin</button>
+    </div>
+    <div class="fg"><label>Username</label><input type="text" id="lu" placeholder="Enter username"/></div>
+    <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="Enter password"/></div>
+    <button class="btn-login" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="lerr">Invalid credentials. Try again.</div>
+    <div class="login-switch">No account? <a onclick="showToast('Registration coming soon! 🚀')">Sign up free</a></div>
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div id="msgModal">
+  <div class="msg-box">
+    <h3>💬 Message Author</h3>
+    <textarea class="msg-ta" id="msgTxt" placeholder="Write your message..."></textarea>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Want to include a tip? Scroll to the tip section below ☕</p>
+    <div class="msg-acts">
+      <button class="btn-cancel" onclick="closeM('msgModal')">Cancel</button>
+      <button class="btn-send" onclick="sendMsg()">Send ✉️</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP NAV -->
+<nav id="topNav">
+  <div class="nav-logo" onclick="goPage('home')">📖 ReadWell</div>
+  <input class="nav-search" type="text" placeholder="Search books, authors..." id="si" oninput="handleSearch(this.value)"/>
+  <div class="nav-right">
+    <button class="nbtn ww" onclick="goPage('writewell')">✍️ WriteWell</button>
+    <button class="nbtn" id="loginBtn" onclick="openM('loginModal')">Sign In</button>
+    <div class="nav-av hidden" id="navAv"><span id="navAvLetter">U</span><div class="av-drop"><a onclick="goPage('profile')">👤 My Profile</a><a onclick="goPage('writewell')">✍️ WriteWell</a><a onclick="goPage('profile')">🔖 My Shelves</a><a class="lo" onclick="doLogout()">🚪 Log Out</a></div></div>
+  </div>
+</nav>
+
+<!-- PAGES -->
+
+<!-- HOME -->
+<div class="page active" id="home">
+  <div class="hero">
+    <h1>Your World of <span>Stories</span><br/>Starts Here</h1>
+    <p>Discover free fiction and non-fiction. Support emerging writers. Read without limits.</p>
+    <div class="hero-btns">
+      <button class="btn-p" onclick="scrollToBooks()">🔥 Explore Books</button>
+      <button class="btn-s" onclick="goPage('writewell')">✍️ Start Writing</button>
+    </div>
+  </div>
+  <!-- Featured -->
+  <div class="star-strip">
+    <div class="hl-cover">🏰</div>
+    <div class="hl-info">
+      <h2>The Last Archive</h2>
+      <p>A librarian discovers the world's last repository of forbidden knowledge — and the price of knowing too much.</p>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;">by <span style="color:var(--teal)">Amara O.</span> · 342 reads · ⭐ 4.8</div>
+      <div class="hl-tags"><span class="hl-tag">Fantasy</span><span class="hl-tag">PG-13</span><span class="hl-tag">Series</span></div>
+      <button class="btn-p" style="margin-top:12px;padding:9px 18px;font-size:12px;" onclick="openBook({title:'The Last Archive',author:'Amara O.',emoji:'🏰'})">Start Reading</button>
+    </div>
+  </div>
+  <!-- Genres -->
+  <div class="genre-pills" id="genrePills">
+    <div class="gp active" onclick="filterGenre(this,'All')">All</div>
+    <div class="gp" onclick="filterGenre(this,'Fantasy')">🏰 Fantasy</div>
+    <div class="gp" onclick="filterGenre(this,'Sci-Fi')">🚀 Sci-Fi</div>
+    <div class="gp" onclick="filterGenre(this,'Romance')">💕 Romance</div>
+    <div class="gp" onclick="filterGenre(this,'Thriller')">🔪 Thriller</div>
+    <div class="gp" onclick="filterGenre(this,'Horror')">👻 Horror</div>
+    <div class="gp" onclick="filterGenre(this,'Non-Fiction')">📚 Non-Fiction</div>
+    <div class="gp" onclick="filterGenre(this,'Research')">🔬 Research</div>
+    <div class="gp" onclick="filterGenre(this,'Historical')">🌍 Historical</div>
+    <div class="gp" onclick="filterGenre(this,'Poetry')">✍️ Poetry</div>
+  </div>
+  <!-- Trending -->
+  <div class="sec" id="booksSection">
+    <div class="sec-hdr"><div class="sec-title">🔥 <span>Trending</span></div><span class="see-all">See all</span></div>
+    <div class="books-grid" id="trendingGrid"></div>
+  </div>
+  <!-- New -->
+  <div class="sec">
+    <div class="sec-hdr"><div class="sec-title">✨ <span>New</span> Releases</div><span class="see-all">See all</span></div>
+    <div class="books-grid" id="newGrid"></div>
+  </div>
+  <!-- Prompts -->
+  <div class="sec">
+    <div class="sec-hdr"><div class="sec-title">💡 <span>Writing</span> Prompts</div><span class="see-all" onclick="goPage('writewell')">Write →</span></div>
+    <div id="promptsList"></div>
+  </div>
+</div>
+
+<!-- SEARCH PAGE -->
+<div class="page" id="searchPage">
+  <div style="max-width:860px;margin:0 auto;padding:20px 16px;">
+    <h2 style="font-family:'Playfair Display',serif;margin-bottom:18px;">Results for "<span id="searchTerm" style="color:var(--teal)"></span>"</h2>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<!-- READING PAGE -->
+<div class="page" id="readingPage">
+  <div class="read-toolbar">
+    <button class="rs-btn" onclick="goPage('home')">← Back</button>
+    <button class="rs-btn" onclick="setFont('sm')">A-</button>
+    <button class="rs-btn on" onclick="setFont('md')">A</button>
+    <button class="rs-btn" onclick="setFont('lg')">A+</button>
+    <button class="rs-btn" onclick="setTheme('dark')">🌙</button>
+    <button class="rs-btn" onclick="setTheme('sepia')">📜</button>
+    <button class="rs-btn" onclick="setTheme('light')">☀️</button>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="read-wrap" id="readWrap">
+    <h2 id="chapTitle">Chapter 1: The First Shelf</h2>
+    <div id="chapBody"></div>
+  </div>
+  <!-- Actions -->
+  <div class="action-bar">
+    <button class="act-btn" id="likeBtn" onclick="toggleLike()">❤️ <span id="likeCount">124</span></button>
+    <button class="act-btn" id="bkmBtn" onclick="toggleBkm()">🔖 Bookmark</button>
+    <button class="act-btn" onclick="openM('msgModal')">💬 Message</button>
+    <button class="act-btn" onclick="followAuthor()">+ Follow</button>
+    <button class="act-btn" onclick="reportContent()">⚑ Report</button>
+  </div>
+  <!-- TIP / BUY ME A COFFEE — end of chapter -->
+  <div class="tip-box">
+    <h4>☕ Buy the Author a Coffee</h4>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Enjoyed this chapter? Support <strong style="color:var(--teal)" id="authName">the author</strong>! Min. $2 · 90% goes to them directly.</p>
+    <div class="tip-amts">
+      <button class="ta sel" onclick="selTip(this,2)">$2</button>
+      <button class="ta" onclick="selTip(this,5)">$5</button>
+      <button class="ta" onclick="selTip(this,10)">$10</button>
+      <button class="ta" onclick="selTip(this,20)">$20</button>
+    </div>
+    <div class="tip-btns">
+      <button class="btn-pp" onclick="doTip('PayPal')">💙 PayPal</button>
+      <button class="btn-cc" onclick="doTip('Card')">💳 Card</button>
+    </div>
+  </div>
+  <!-- Chapter nav -->
+  <div class="chap-nav">
+    <button class="btn-s" style="padding:9px 18px;font-size:12px;" onclick="prevChap()">← Prev</button>
+    <span style="color:var(--text-dim);font-size:12px;align-self:center;" id="chapIndicator">Ch 1 of 12</span>
+    <button class="btn-p" style="padding:9px 18px;font-size:12px;" onclick="nextChap()">Next →</button>
+  </div>
+  <!-- Comments -->
+  <div class="comments-sec">
+    <h3>💬 Comments (<span id="cmtCount">3</span>)</h3>
+    <div class="cmt-input-wrap">
+      <textarea class="cmt-input" id="newCmt" rows="2" placeholder="Share your thoughts..."></textarea>
+      <button class="btn-cmt" onclick="postCmt()">Post</button>
+    </div>
+    <div id="cmtList"></div>
+  </div>
+</div>
+
+<!-- WRITEWELL PAGE -->
+<div class="page" id="writewellPage">
+  <div class="ww-header">
+    <h1>✍️ WriteWell</h1>
+    <p>Your publishing studio. Write, schedule, and share your stories.</p>
+  </div>
+  <div class="ww-con">
+    <div id="writerDash" class="hidden">
+      <h2 style="font-family:'Playfair Display',serif;margin-bottom:18px;">📊 Dashboard</h2>
+      <div class="dash-stats">
+        <div class="stat-card"><div class="stat-num">1,240</div><div class="stat-lbl">Total Reads</div></div>
+        <div class="stat-card"><div class="stat-num">84</div><div class="stat-lbl">Followers</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--gold)">$18.90</div><div class="stat-lbl">Tips Earned</div></div>
+        <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Published</div></div>
+      </div>
+    </div>
+    <h2 style="font-family:'Playfair Display',serif;margin-bottom:18px;">📝 Write New Chapter</h2>
+    <div class="pub-form">
+      <input class="pi full" id="pubTitle" type="text" placeholder="Work title..."/>
+      <select class="ps" id="pubGenre"><option value="">Genre</option><option>Fantasy</option><option>Sci-Fi</option><option>Romance</option><option>Thriller</option><option>Horror</option><option>Non-Fiction</option><option>Research</option><option>Historical</option><option>Drama</option><option>Poetry</option></select>
+      <select class="ps" id="pubRating"><option value="">Age Rating</option><option>G</option><option>PG</option><option>PG-13</option><option>18+</option></select>
+      <input class="pi full" id="pubSeries" type="text" placeholder="Series name (leave blank for standalone)"/>
+      <input class="pi" id="pubChap" type="text" placeholder="Chapter title..."/>
+      <input class="pi" id="pubSched" type="datetime-local" title="Schedule post"/>
+      <input class="pi full" id="pubTags" type="text" placeholder="Tags: magic, adventure, dragons..."/>
+    </div>
+    <div class="ed-toolbar">
+      <button class="ed-btn" onclick="fmt('bold')"><b>B</b></button>
+      <button class="ed-btn" onclick="fmt('italic')"><i>I</i></button>
+      <button class="ed-btn" onclick="fmt('underline')"><u>U</u></button>
+      <button class="ed-btn" onclick="fmt('insertOrderedList')">1.</button>
+      <button class="ed-btn" onclick="fmt('insertUnorderedList')">•</button>
+      <button class="ed-btn" onclick="fmt('formatBlock','h2')">H2</button>
+      <button class="ed-btn" onclick="fmt('formatBlock','blockquote')">" "</button>
+      <button class="ed-btn" onclick="clearEd()">🗑</button>
+      <span style="font-size:11px;color:var(--text-dim);margin-left:auto;align-self:center;" id="saveLabel"></span>
+    </div>
+    <div class="ed-area" id="edArea" contenteditable="true"></div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn-pub" onclick="publishWork()">🚀 Publish</button>
+      <button class="btn-dft" onclick="saveDraft()">💾 Draft</button>
+    </div>
+    <div style="margin-top:36px;">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;">📄 Drafts</h3>
+      <div id="draftsList"><p style="color:var(--text-dim);font-style:italic;font-size:13px;">No drafts yet.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page" id="profilePage">
+  <div class="prof-hdr">
+    <div class="prof-av" id="profAv">U</div>
+    <div>
+      <h2 id="profName">Your Name</h2>
+      <p class="prof-bio">Reader & explorer of worlds. Passionate about great stories.</p>
+      <div class="prof-stats">
+        <div class="ps-item"><strong>12</strong><span>Books Read</span></div>
+        <div class="ps-item"><strong>3</strong><span>Following</span></div>
+        <div class="ps-item"><strong>1</strong><span>Followers</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="shelf-tabs">
+    <button class="s-tab active" onclick="switchShelf(this,'reading')">📖 Reading</button>
+    <button class="s-tab" onclick="switchShelf(this,'finished')">✅ Finished</button>
+    <button class="s-tab" onclick="switchShelf(this,'want')">📌 Want to Read</button>
+    <button class="s-tab" onclick="switchShelf(this,'bkm')">🔖 Bookmarks</button>
+  </div>
+  <div class="sec" id="shelfCon"><p style="color:var(--text-dim);font-style:italic;">Start reading to fill your shelves! 📚</p></div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page hidden" id="adminPage">
+  <div class="admin-hdr">
+    <h1>⚙️ Admin Panel</h1>
+    <p style="color:rgba(224,85,85,.7);font-size:12px;margin-top:3px;">Full platform control — Majikworks</p>
+  </div>
+  <div class="admin-tabs">
+    <button class="at active" onclick="aTab(this,'aUsers')">👥 Users</button>
+    <button class="at" onclick="aTab(this,'aTips')">💰 Revenue</button>
+    <button class="at" onclick="aTab(this,'aContent')">📚 Content</button>
+    <button class="at" onclick="aTab(this,'aStar')">⭐ Starred</button>
+    <button class="at" onclick="aTab(this,'aSettings')">🔧 Settings</button>
+  </div>
+  <div class="admin-con">
+    <div class="a-sec active" id="aUsers">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;">All Users</h3>
+      <div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Username</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody id="usersBody"></tbody></table></div>
+    </div>
+    <div class="a-sec" id="aTips">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:6px;">Platform Revenue</h3>
+      <p style="font-size:12px;color:var(--text-dim);">Total platform earnings (10% of all tips)</p>
+      <div class="tip-total" id="platRev">$0.00</div>
+      <div style="overflow-x:auto;"><table class="dt" style="margin-top:16px;"><thead><tr><th>Date</th><th>Reader</th><th>Writer</th><th>Amount</th><th>Cut (10%)</th></tr></thead><tbody id="tipsBody"></tbody></table></div>
+    </div>
+    <div class="a-sec" id="aContent">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;">Published Works</h3>
+      <div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Rating</th><th>Actions</th></tr></thead><tbody id="contentBody"></tbody></table></div>
+    </div>
+    <div class="a-sec" id="aStar">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:12px;">⭐ Featured Works</h3>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;">Writers pay to be featured OR admin stars trending works manually.</p>
+      <div id="starredList"></div>
+    </div>
+    <div class="a-sec" id="aSettings">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:18px;">Settings</h3>
+      <div class="fg" style="max-width:360px;"><label>Season Theme</label>
+        <select class="ps" onchange="setSeason(this.value)"><option value="auto">Auto (by calendar)</option><option value="spring">🌸 Spring</option><option value="summer">☀️ Summer</option><option value="autumn">🍂 Autumn</option><option value="winter">❄️ Winter</option></select>
+      </div>
+      <div class="fg" style="max-width:360px;margin-top:14px;"><label>Platform PayPal</label><input class="pi" type="email" value="admin@readwell.com"/></div>
+      <div class="fg" style="max-width:360px;margin-top:14px;"><label>Tip Split (Platform %)</label><input class="pi" type="number" value="10" min="5" max="30"/></div>
+      <button class="btn-pub" style="margin-top:12px;padding:11px 22px;font-size:13px;" onclick="showToast('Settings saved! ✅')">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODERATOR PAGE -->
+<div class="page hidden" id="modPage">
+  <div class="mod-hdr">
+    <h1>🛡 Moderator Panel</h1>
+    <p style="color:var(--text-dim);font-size:12px;margin-top:3px;">Review reports and manage content</p>
+  </div>
+  <div class="admin-con">
+    <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;">📋 Reports</h3>
+    <div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Type</th><th>Content</th><th>Reporter</th><th>Reason</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>Comment</td><td>"Offensive remark..."</td><td>user_42</td><td>Harassment</td><td><button class="btn-ban" onclick="showToast('Removed ✅')">Remove</button></td></tr>
+      <tr><td>Book</td><td>"Dark Desires"</td><td>user_18</td><td>Wrong rating</td><td><button class="btn-ban" onclick="showToast('Sent to review 📋')">Review</button></td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <div class="bnav-inner">
+    <div class="bni active" onclick="goPage('home');setBni(this)"><div class="bni-ico">🏠</div>Home</div>
+    <div class="bni" onclick="goPage('searchPage');setBni(this)"><div class="bni-ico">🔍</div>Search</div>
+    <div class="bni" onclick="goPage('writewell');setBni(this)"><div class="bni-ico">✍️</div>Write</div>
+    <div class="bni" onclick="goPage('profile');setBni(this)"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<div id="toast">✅ Done!</div>
+
+<script>
+// STATE
+const S = {
+  user:null,role:null,tip:2,chap:1,totalChaps:12,
+  liked:false,bkmd:false,tips:[],platRev:0,
+  drafts:[],
+  users:[
+    {n:'Majikworks',r:'admin',j:'2025-01-01',s:'active'},
+    {n:'Amara_O',r:'writer',j:'2025-03-10',s:'active'},
+    {n:'BookLover99',r:'user',j:'2025-04-15',s:'active'},
+    {n:'NightReader',r:'user',j:'2025-05-20',s:'active'},
+    {n:'ScribbleMaster',r:'writer',j:'2025-06-01',s:'active'},
+  ],
+  books:[
+    {t:'The Last Archive',a:'Amara O.',g:'Fantasy',r:'PG-13',e:'🏰',reads:342,star:4.8,feat:true},
+    {t:'Echoes of Mars',a:'Kai Zhen',g:'Sci-Fi',r:'PG',e:'🚀',reads:210,star:4.5,feat:false},
+    {t:'Whispers at Dawn',a:'Lena Moore',g:'Romance',r:'PG-13',e:'💕',reads:189,star:4.7,feat:false},
+    {t:'Code Red Protocol',a:'Dev Sharma',g:'Thriller',r:'18+',e:'🔪',reads:156,star:4.3,feat:false},
+    {t:'The Hollow Hours',a:'Sade Adeyemi',g:'Horror',r:'18+',e:'👻',reads:98,star:4.1,feat:true},
+    {t:'Roots & Routes',a:'Yemi Abiodun',g:'Non-Fiction',r:'G',e:'📚',reads:445,star:4.9,feat:true},
+  ],
+  cmts:[
+    {u:'BookLover99',txt:'This chapter had me holding my breath! Incredible world-building.'},
+    {u:'NightReader',txt:"Amara never misses. Chapter 1 and I'm already obsessed."},
+    {u:'ScribbleMaster',txt:'The prose is just *chef\'s kiss*. I aspire to write like this.'},
+  ],
+  prompts:[
+    'A librarian discovers every book she shelves contains a different ending than when it was written.',
+    'Write a romance set entirely through the annotations left in a secondhand book.',
+    'The last human on Earth finds an alien\'s diary written in perfect English.',
+  ],
+};
+
+const chapContent = [
+  `The dust had settled on the last shelf of the world's final archive when Mara first noticed the book that wasn't supposed to exist.\n\nIt sat between a leather-bound atlas of lost seas and a crumbling treatise on forbidden alchemies — ordinary enough in a place like this — except that its spine bore no title, no author, no year. Just a symbol: a circle eating its own tail.\n\nMara reached for it with the careful hands of a woman who had spent thirty years preserving things too fragile for the light. The moment her fingertips touched the cover, the archive went silent. Not quiet. Silent. The hum of the ancient ventilation system, the distant shuffle of her colleague's footsteps — all of it, gone.`,
+  `She didn't open the book that night. She wasn't ready — and some part of her, the part that had survived thirty years in the archive, knew that readiness mattered here.\n\nInstead she made tea. She sat at her small desk beneath the window that looked out onto the courtyard where no one walked anymore, and she thought about the circle eating its own tail.\n\nOuroboros. That was the word. Eternal return. The end that is also a beginning. Time folding back on itself like cloth.\n\nAt midnight she finally opened the cover. The first page read: Hello, Mara. We've been waiting for you to find this.`,
+];
+
+// INIT
+window.addEventListener('load',()=>{
+  // Stars
+  const se=document.getElementById('splashStars');
+  for(let i=0;i<50;i++){const s=document.createElement('div');s.className='splash-star';const z=Math.random()*2+1;s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s;`;se.appendChild(s);}
+  autoSeason();
+  setTimeout(()=>{document.getElementById('splash').classList.add('hide');setTimeout(()=>document.getElementById('splash').style.display='none',800);},3000);
+  renderBooks();renderPrompts();renderCmts();renderAdminData();
+  try{const sv=localStorage.getItem('rw_s');if(sv){const d=JSON.parse(sv);loginOk(d.u,d.r);}}catch(e){}
+});
+
+function autoSeason(){
+  const m=new Date().getMonth();
+  let s='winter';
+  if(m>=2&&m<=4)s='spring';
+  else if(m>=5&&m<=7)s='summer';
+  else if(m>=8&&m<=10)s='autumn';
+  setSeason(s);
+}
+function setSeason(v){document.body.className=v==='auto'?'':v;}
+
+// AUTH
+function openM(id){document.getElementById(id).classList.add('show');}
+function closeM(id){document.getElementById(id).classList.remove('show');}
+
+document.querySelectorAll('.role-tab').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.role-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');});});
+
+function doLogin(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value.trim();
+  const r=document.querySelector('.role-tab.active').dataset.role;
+  const err=document.getElementById('lerr');
+  err.style.display='none';
+  if(r==='admin'){if(u==='Majikworks'&&p==='Starapp')loginOk(u,r);else{err.style.display='block';return;}}
+  else if(r==='moderator'){const m=S.users.find(x=>x.n===u&&x.r==='moderator');if(m)loginOk(u,r);else{err.style.display='block';return;}}
+  else{if(u&&p)loginOk(u,r);else{err.style.display='block';return;}}
+}
+
+function loginOk(u,r){
+  S.user=u;S.role=r;
+  closeM('loginModal');
+  document.getElementById('loginBtn').classList.add('hidden');
+  const av=document.getElementById('navAv');av.classList.remove('hidden');
+  document.getElementById('navAvLetter').textContent=u[0].toUpperCase();
+  document.getElementById('profName').textContent=u;
+  document.getElementById('profAv').textContent=u[0].toUpperCase();
+  if(r==='admin'){document.getElementById('adminPage').classList.remove('hidden');goPage('admin');}
+  else if(r==='moderator'){document.getElementById('modPage').classList.remove('hidden');goPage('mod');}
+  if(r==='writer'||r==='admin')document.getElementById('writerDash').classList.remove('hidden');
+  showToast(`Welcome back, ${u}! 👋`);
+  try{localStorage.setItem('rw_s',JSON.stringify({u,r}));}catch(e){}
+}
+
+// PAGES
+const PM={home:'home',writewell:'writewellPage',profile:'profilePage',admin:'adminPage',mod:'modPage',reading:'readingPage',searchPage:'searchPage'};
+function goPage(n){
+  Object.values(PM).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  const t=PM[n]||n;const el=document.getElementById(t);if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+}
+function scrollToBooks(){document.getElementById('booksSection').scrollIntoView({behavior:'smooth'});}
+function setBni(el){document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+
+// BOOKS
+function renderBooks(){
+  const tg=document.getElementById('trendingGrid');const ng=document.getElementById('newGrid');
+  S.books.forEach((b,i)=>{const c=mkCard(b);if(i<3)tg.appendChild(c);else ng.appendChild(c);});
+}
+function mkCard(b){
+  const d=document.createElement('div');d.className='book-card';d.onclick=()=>openBook(b);
+  d.innerHTML=`<div class="book-cover">${b.feat?'<div class="book-starred-badge">⭐ STARRED</div>':''}<div class="book-rbadge">${b.r}</div><span style="font-size:50px">${b.e}</span></div><div class="book-info"><div class="book-title">${b.t}</div><div class="book-author">by ${b.a}</div><div class="book-meta"><span>👁 ${b.reads}</span><span>⭐ ${b.star}</span></div></div>`;
+  return d;
+}
+function filterGenre(el,g){
+  document.querySelectorAll('.gp').forEach(p=>p.classList.remove('active'));el.classList.add('active');
+  const tg=document.getElementById('trendingGrid');tg.innerHTML='';
+  const filtered=g==='All'?S.books:S.books.filter(b=>b.g===g);
+  if(!filtered.length){tg.innerHTML=`<p style="color:var(--text-dim);grid-column:1/-1;padding:20px 0;font-style:italic;">No ${g} books yet. Be the first to write one! ✍️</p>`;return;}
+  filtered.forEach(b=>tg.appendChild(mkCard(b)));
+}
+
+// PROMPTS
+function renderPrompts(){
+  const el=document.getElementById('promptsList');
+  S.prompts.forEach(p=>{
+    const d=document.createElement('div');
+    d.style.cssText='background:var(--card);border:1px solid var(--card-border);border-radius:11px;padding:14px 16px;margin-bottom:9px;cursor:pointer;transition:border-color .2s;';
+    d.onmouseover=()=>d.style.borderColor='var(--teal)';d.onmouseout=()=>d.style.borderColor='var(--card-border)';
+    d.innerHTML=`<div style="font-size:11px;color:var(--text-dim);margin-bottom:5px;">💡 Prompt</div><div style="font-size:13px;line-height:1.6;">"${p}"</div><div style="margin-top:8px;font-size:11px;color:var(--teal);cursor:pointer;" onclick="goPage('writewell')">Respond →</div>`;
+    el.appendChild(d);
+  });
+}
+
+// READING
+function openBook(b){
+  if(b)document.getElementById('authName').textContent=b.author||b.a||'the author';
+  goPage('reading');loadChap();
+}
+function loadChap(){
+  const idx=(S.chap-1)%chapContent.length;
+  const titles=['The First Shelf','The Ouroboros','The Price of Knowledge','Into The Dark','The Return','Echoes'];
+  document.getElementById('chapTitle').textContent=`Chapter ${S.chap}: ${titles[(S.chap-1)%titles.length]}`;
+  document.getElementById('chapBody').innerHTML=chapContent[idx].split('\n\n').map(p=>`<p>${p}</p>`).join('');
+  document.getElementById('progFill').style.width=(S.chap/S.totalChaps*100)+'%';
+  document.getElementById('chapIndicator').textContent=`Ch ${S.chap} of ${S.totalChaps}`;
+}
+function nextChap(){if(S.chap<S.totalChaps){S.chap++;loadChap();window.scrollTo(0,0);showToast(`Chapter ${S.chap} ✨`);}else showToast('End of work! ✨');}
+function prevChap(){if(S.chap>1){S.chap--;loadChap();window.scrollTo(0,0);}}
+function setFont(s){const el=document.getElementById('readWrap');['fs-sm','fs-lg','fs-xl'].forEach(c=>el.classList.remove(c));if(s!=='md')el.classList.add('fs-'+s);}
+function setTheme(t){const el=document.getElementById('readWrap');['t-sepia','t-light'].forEach(c=>el.classList.remove(c));if(t!=='dark')el.classList.add('t-'+t);}
+function toggleLike(){S.liked=!S.liked;const b=document.getElementById('likeBtn');const c=document.getElementById('likeCount');b.classList.toggle('liked',S.liked);c.textContent=parseInt(c.textContent)+(S.liked?1:-1);showToast(S.liked?'❤️ Liked!':'Like removed');}
+function toggleBkm(){S.bkmd=!S.bkmd;document.getElementById('bkmBtn').classList.toggle('bkd',S.bkmd);showToast(S.bkmd?'🔖 Bookmarked!':'Bookmark removed');}
+function followAuthor(){showToast('Now following this author! 👤');}
+function reportContent(){showToast('Report submitted to moderators. 📋');}
+
+// TIPS
+function selTip(btn,amt){document.querySelectorAll('.ta').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');S.tip=amt;}
+function doTip(method){
+  if(!S.user){openM('loginModal');return;}
+  const p=(S.tip*0.1).toFixed(2);const w=(S.tip*0.9).toFixed(2);
+  S.platRev+=parseFloat(p);
+  S.tips.push({d:new Date().toLocaleDateString(),rdr:S.user,wtr:document.getElementById('authName').textContent,amt:`$${S.tip}`,cut:`$${p}`});
+  const pr=document.getElementById('platRev');if(pr)pr.textContent=`$${S.platRev.toFixed(2)}`;
+  renderTipsTable();
+  showToast(`☕ $${w} sent via ${method}! Thank you!`);
+}
+
+// COMMENTS
+function renderCmts(){
+  const el=document.getElementById('cmtList');if(!el)return;el.innerHTML='';
+  S.cmts.forEach(c=>{
+    const d=document.createElement('div');d.className='cmt';
+    d.innerHTML=`<div class="cmt-av">${c.u[0].toUpperCase()}</div><div class="cmt-body"><div class="cmt-author">${c.u}</div><div class="cmt-text">${c.txt}</div><div class="cmt-acts"><span class="cmt-act" onclick="showToast('👍')">👍 Helpful</span><span class="cmt-act" onclick="showToast('Reply soon!')">💬 Reply</span><span class="cmt-act" onclick="showToast('Reported 📋')">⚑ Report</span></div></div>`;
+    el.appendChild(d);
+  });
+  const cc=document.getElementById('cmtCount');if(cc)cc.textContent=S.cmts.length;
+}
+function postCmt(){
+  if(!S.user){openM('loginModal');return;}
+  const txt=document.getElementById('newCmt').value.trim();
+  if(!txt){showToast('Write something first!');return;}
+  S.cmts.push({u:S.user,txt});document.getElementById('newCmt').value='';renderCmts();showToast('💬 Comment posted!');
+}
+
+// WRITEWELL
+function fmt(cmd,val){document.getElementById('edArea').focus();document.execCommand(cmd,false,val||null);}
+function clearEd(){if(confirm('Clear editor?'))document.getElementById('edArea').innerHTML='';}
+function saveDraft(){
+  const t=document.getElementById('pubTitle').value||'Untitled';
+  const c=document.getElementById('edArea').innerHTML;
+  S.drafts.push({t,c,d:new Date().toLocaleDateString()});renderDrafts();showToast('💾 Draft saved!');
+}
+function renderDrafts(){
+  const el=document.getElementById('draftsList');
+  if(!S.drafts.length){el.innerHTML='<p style="color:var(--text-dim);font-style:italic;font-size:13px;">No drafts yet.</p>';return;}
+  el.innerHTML='';
+  S.drafts.forEach((d,i)=>{
+    const div=document.createElement('div');
+    div.style.cssText='background:var(--card);border:1px solid var(--card-border);border-radius:9px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;';
+    div.innerHTML=`<div><div style="font-weight:600;font-size:13px;margin-bottom:3px;">${d.t}</div><div style="font-size:11px;color:var(--text-dim);">${d.d}</div></div><button onclick="loadDraft(${i})" style="padding:7px 12px;background:var(--teal);border:none;border-radius:7px;color:#0a1628;cursor:pointer;font-size:11px;font-weight:700;">Load</button>`;
+    el.appendChild(div);
+  });
+}
+function loadDraft(i){document.getElementById('pubTitle').value=S.drafts[i].t;document.getElementById('edArea').innerHTML=S.drafts[i].c;showToast('Draft loaded!');}
+function publishWork(){
+  if(!S.user){openM('loginModal');return;}
+  const t=document.getElementById('pubTitle').value;
+  if(!t){showToast('Add a title first!');return;}
+  S.books.push({t,a:S.user,g:document.getElementById('pubGenre').value||'General',r:document.getElementById('pubRating').value||'G',e:'📝',reads:0,star:0,feat:false});
+  showToast(`🚀 "${t}" published!`);document.getElementById('pubTitle').value='';document.getElementById('edArea').innerHTML='';renderAdminData();
+}
+// Auto-save every 30s
+setInterval(()=>{const ed=document.getElementById('edArea');if(ed&&ed.innerHTML.length>10){document.getElementById('saveLabel').textContent='Auto-saved '+new Date().toLocaleTimeString();}},30000);
+
+// SEARCH
+let stmr;
+function handleSearch(v){
+  clearTimeout(stmr);
+  if(!v.trim()){goPage('home');return;}
+  stmr=setTimeout(()=>{
+    goPage('searchPage');document.getElementById('searchTerm').textContent=v;
+    const res=S.books.filter(b=>b.t.toLowerCase().includes(v.toLowerCase())||b.a.toLowerCase().includes(v.toLowerCase())||b.g.toLowerCase().includes(v.toLowerCase()));
+    const el=document.getElementById('searchResults');el.innerHTML='';
+    if(!res.length){el.innerHTML='<p style="color:var(--text-dim);padding:20px 0;">No results. Try something else!</p>';return;}
+    res.forEach(b=>{const d=document.createElement('div');d.style.cssText='display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--card-border);cursor:pointer;border-radius:9px;transition:background .2s;';d.onmouseover=()=>d.style.background='var(--card)';d.onmouseout=()=>d.style.background='transparent';d.onclick=()=>openBook(b);d.innerHTML=`<div style="font-size:30px;width:48px;height:62px;display:flex;align-items:center;justify-content:center;background:var(--card);border-radius:7px;flex-shrink:0;">${b.e}</div><div><div style="font-family:'Playfair Display',serif;font-size:15px;margin-bottom:3px;">${b.t}</div><div style="font-size:12px;color:var(--text-dim);">by ${b.a} · ${b.g} · ${b.r} · 👁 ${b.reads}</div></div>`;el.appendChild(d);});
+  },300);
+}
+
+// ADMIN
+function aTab(btn,sec){
+  document.querySelectorAll('.at').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.a-sec').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');document.getElementById(sec).classList.add('active');
+}
+function renderAdminData(){
+  const tb=document.getElementById('usersBody');if(!tb)return;tb.innerHTML='';
+  S.users.forEach(u=>{const tr=document.createElement('tr');tr.innerHTML=`<td><strong>${u.n}</strong></td><td><span class="badge ${u.r==='admin'||u.r==='moderator'?'bm':'bu'}">${u.r}</span></td><td>${u.j}</td><td><span class="badge ${u.s==='banned'?'bb':'bu'}">${u.s}</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;">${u.r!=='admin'?`<button class="btn-ap" onclick="appointMod('${u.n}')">Mod</button><button class="btn-ban" onclick="banUser('${u.n}')">Ban</button>`:''}</td>`;tb.appendChild(tr);});
+  const cb=document.getElementById('contentBody');if(cb){cb.innerHTML='';S.books.forEach(b=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${b.e} ${b.t}</td><td>${b.a}</td><td>${b.g}</td><td>${b.r}</td><td><button class="btn-ban" onclick="showToast('Removed ✅')">Remove</button> <button class="btn-ap" onclick="toggleStar(this,'${b.t}')">${b.feat?'Unstar':'⭐ Star'}</button></td>`;cb.appendChild(tr);});}
+  renderTipsTable();renderStarred();
+}
+function renderTipsTable(){const el=document.getElementById('tipsBody');if(!el)return;el.innerHTML='';S.tips.forEach(t=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${t.d}</td><td>${t.rdr}</td><td>${t.wtr}</td><td style="color:var(--gold)">${t.amt}</td><td style="color:var(--teal)">${t.cut}</td>`;el.appendChild(tr);});}
+function renderStarred(){const el=document.getElementById('starredList');if(!el)return;const starred=S.books.filter(b=>b.feat);el.innerHTML=starred.length?starred.map(b=>`<div style="background:var(--card);border:1px solid rgba(240,192,96,.3);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><span>${b.e} <strong>${b.t}</strong> by ${b.a}</span><button class="btn-ban" onclick="toggleStar(null,'${b.t}')">Remove Star</button></div>`).join(''):'<p style="color:var(--text-dim);font-style:italic;font-size:13px;">No starred works yet.</p>';}
+function toggleStar(btn,title){const b=S.books.find(x=>x.t===title);if(b){b.feat=!b.feat;renderAdminData();showToast(b.feat?`⭐ "${title}" starred!`:`Star removed from "${title}"`);}}
+function appointMod(n){const u=S.users.find(x=>x.n===n);if(u){u.r='moderator';renderAdminData();showToast(`${n} is now a Moderator 🛡`);}}
+function banUser(n){const u=S.users.find(x=>x.n===n);if(u){u.s=u.s==='banned'?'active':'banned';renderAdminData();showToast(`${n} ${u.s==='banned'?'banned ❌':'unbanned ✅'}`);}}
+
+// MISC
+function switchShelf(btn,t){document.querySelectorAll('.s-tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('shelfCon').innerHTML='<p style="color:var(--text-dim);font-style:italic;padding:20px 0;">No books here yet. Start exploring! 📚</p>';}
+function sendMsg(){showToast('Message sent! ✉️');closeM('msgModal');document.getElementById('msgTxt').value='';}
+
+function doLogout(){
+  S.user=null;S.role=null;
+  document.getElementById('loginBtn').classList.remove('hidden');
+  document.getElementById('navAv').classList.add('hidden');
+  document.getElementById('navAvLetter').textContent='U';
+  document.getElementById('writerDash').classList.add('hidden');
+  document.getElementById('adminPage').classList.add('hidden');
+  document.getElementById('modPage').classList.add('hidden');
+  try{localStorage.removeItem('rw_s');}catch(e){}
+  goPage('home');
+  showToast('Logged out! See you soon 👋');
+}
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0a1628"/>
+  <meta name="description" content="ReadWell — Read freely. Write boldly."/>
+  <link rel="manifest" href="manifest.json"/>
+  <title>ReadWell</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#0a1628;--bg2:#1a2a4a;--teal:#2de0c0;--teal-dim:#0a9e85;
+      --ashen:#c8d8e0;--text:#e8f0f5;--text-dim:#8ab8c8;
+      --card:rgba(255,255,255,0.04);--card-border:rgba(45,224,192,0.15);
+      --danger:#e05555;--gold:#f0c060;
+    }
+    body.spring{--bg:#0d1f0f;--bg2:#1a3320;--teal:#4ade80;--teal-dim:#22c55e;}
+    body.summer{--bg:#0d1a2a;--bg2:#1a2f44;--teal:#38bdf8;--teal-dim:#0ea5e9;}
+    body.autumn{--bg:#1a0f05;--bg2:#2d1a08;--teal:#f97316;--teal-dim:#ea580c;}
+    body.winter{--bg:#080e1a;--bg2:#0f1829;--teal:#93c5fd;--teal-dim:#60a5fa;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Lora',serif;min-height:100vh;transition:background 0.5s;}
+
+    /* SPLASH */
+    #splash{position:fixed;inset:0;background:linear-gradient(135deg,var(--bg),var(--bg2));display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.8s,visibility 0.8s;}
+    #splash.hide{opacity:0;visibility:hidden;}
+    .splash-stars{position:absolute;inset:0;pointer-events:none;}
+    .splash-star{position:absolute;background:var(--teal);border-radius:50%;animation:twinkle 3s infinite alternate;}
+    @keyframes twinkle{0%{opacity:0.1}100%{opacity:0.5}}
+    .bounce-text{display:flex;align-items:flex-end;gap:1px;}
+    .bounce-text span{display:inline-block;font-family:'Cinzel',serif;font-size:clamp(48px,12vw,90px);font-weight:700;color:var(--teal);text-shadow:0 0 10px rgba(45,224,192,0.7),0 12px 20px rgba(0,0,0,0.6);animation:bounce 1.2s infinite;}
+    .bounce-text span:nth-child(1){animation-delay:0s}.bounce-text span:nth-child(2){animation-delay:.08s}.bounce-text span:nth-child(3){animation-delay:.16s}.bounce-text span:nth-child(4){animation-delay:.24s}.bounce-text span:nth-child(5){animation-delay:.32s}.bounce-text span:nth-child(6){animation-delay:.4s}.bounce-text span:nth-child(7){animation-delay:.48s}.bounce-text span:nth-child(8){animation-delay:.56s}
+    @keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-28px)}60%{transform:translateY(-18px)}}
+    .shadow-row{display:flex;gap:1px;margin-top:4px;}
+    .lshadow{background:rgba(45,224,192,0.18);border-radius:50%;filter:blur(3px);animation:shadowPulse 1.2s infinite;}
+    .lshadow:nth-child(1){animation-delay:0s}.lshadow:nth-child(2){animation-delay:.08s}.lshadow:nth-child(3){animation-delay:.16s}.lshadow:nth-child(4){animation-delay:.24s}.lshadow:nth-child(5){animation-delay:.32s}.lshadow:nth-child(6){animation-delay:.4s}.lshadow:nth-child(7){animation-delay:.48s}.lshadow:nth-child(8){animation-delay:.56s}
+    @keyframes shadowPulse{0%,100%{width:44px;height:10px;opacity:.5}40%{width:20px;height:5px;opacity:.12}}
+    .splash-tagline{margin-top:20px;font-size:13px;color:var(--text-dim);letter-spacing:6px;font-style:italic;opacity:0;animation:fadeIn 1s ease forwards 1s;}
+    .splash-dots{display:flex;gap:8px;margin-top:36px;opacity:0;animation:fadeIn 1s ease forwards 1.4s;}
+    .sdot{width:8px;height:8px;background:var(--teal);border-radius:50%;animation:dotB 1s infinite;}
+    .sdot:nth-child(2){animation-delay:.2s}.sdot:nth-child(3){animation-delay:.4s}
+    @keyframes dotB{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-10px);opacity:1}}
+    @keyframes fadeIn{to{opacity:1}}
+    .cacc{position:absolute;width:40px;height:40px;opacity:.3;}
+    .cacc.tl{top:20px;left:20px;border-top:2px solid var(--teal);border-left:2px solid var(--teal);}
+    .cacc.tr{top:20px;right:20px;border-top:2px solid var(--teal);border-right:2px solid var(--teal);}
+    .cacc.bl{bottom:20px;left:20px;border-bottom:2px solid var(--teal);border-left:2px solid var(--teal);}
+    .cacc.br{bottom:20px;right:20px;border-bottom:2px solid var(--teal);border-right:2px solid var(--teal);}
+
+    /* LOGIN MODAL */
+    #loginModal{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:8888;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+    #loginModal.show{display:flex!important;}
+    /* MSG MODAL fix */
+    #msgModal{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:7777;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+    #msgModal.show{display:flex!important;}
+    .login-box{background:linear-gradient(145deg,#0f1e35,#1a2d4a);border:1px solid var(--card-border);border-radius:20px;padding:40px 36px;width:min(420px,92vw);animation:slideUp .4s ease;}
+    @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .login-logo{font-family:'Cinzel',serif;font-size:28px;color:var(--teal);text-align:center;margin-bottom:6px;text-shadow:0 0 15px rgba(45,224,192,.5);}
+    .login-sub{text-align:center;color:var(--text-dim);font-size:13px;margin-bottom:24px;font-style:italic;}
+    .role-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+    .role-tab{flex:1;min-width:80px;padding:9px 8px;border:1px solid var(--card-border);background:transparent;color:var(--text-dim);border-radius:10px;cursor:pointer;font-size:12px;transition:all .2s;}
+    .role-tab.active,.role-tab:hover{background:var(--teal);color:#0a1628;border-color:var(--teal);font-weight:700;}
+    .fg{margin-bottom:14px;}
+    .fg label{display:block;font-size:11px;color:var(--text-dim);margin-bottom:5px;letter-spacing:1px;text-transform:uppercase;}
+    .fg input{width:100%;padding:12px 16px;background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Lora',serif;font-size:14px;outline:none;transition:border .2s;}
+    .fg input:focus{border-color:var(--teal);}
+    .btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--teal),var(--teal-dim));border:none;border-radius:12px;color:#0a1628;font-family:'Cinzel',serif;font-size:15px;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-top:6px;}
+    .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(45,224,192,.4);}
+    .login-switch{text-align:center;margin-top:14px;font-size:13px;color:var(--text-dim);}
+    .login-switch a{color:var(--teal);cursor:pointer;}
+    .login-error{color:var(--danger);font-size:13px;text-align:center;margin-top:8px;display:none;}
+
+    /* TOP NAV */
+    #topNav{position:sticky;top:0;z-index:999;background:rgba(10,22,40,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--card-border);padding:10px 16px;display:flex;align-items:center;gap:10px;}
+    .nav-logo{font-family:'Cinzel',serif;font-size:19px;color:var(--teal);cursor:pointer;white-space:nowrap;text-shadow:0 0 10px rgba(45,224,192,.4);}
+    .nav-search{flex:1;max-width:380px;background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:30px;padding:8px 16px;color:var(--text);font-family:'Lora',serif;font-size:14px;outline:none;transition:border .2s;}
+    .nav-search:focus{border-color:var(--teal);}
+    .nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+    .nbtn{padding:7px 14px;border-radius:20px;border:1px solid var(--card-border);background:transparent;color:var(--text);cursor:pointer;font-size:12px;transition:all .2s;white-space:nowrap;font-family:'Lora',serif;}
+    .nbtn:hover,.nbtn.active{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .nbtn.ww{background:linear-gradient(135deg,#1a3a2a,#0d2a1a);border-color:#4ade80;color:#4ade80;}
+    .nbtn.ww:hover{background:#4ade80;color:#0a1628;}
+    .nav-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dim));display:flex;align-items:center;justify-content:center;font-weight:700;color:#0a1628;cursor:pointer;font-size:13px;border:2px solid var(--teal);flex-shrink:0;position:relative;}
+    .nav-av:hover .av-drop{display:block;}
+    .av-drop{display:none;position:absolute;top:42px;right:0;background:#0f1e35;border:1px solid var(--card-border);border-radius:12px;min-width:160px;overflow:hidden;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+    .av-drop a{display:block;padding:12px 16px;font-size:13px;color:var(--text);cursor:pointer;transition:background 0.2s;font-family:'Lora',serif;}
+    .av-drop a:hover{background:rgba(45,224,192,0.1);color:var(--teal);}
+    .av-drop a.lo{color:var(--danger);}
+    .av-drop a.lo:hover{background:rgba(224,85,85,0.1);}
+
+    /* PAGES */
+    .page{display:none;min-height:calc(100vh - 58px);}
+    .page.active{display:block;animation:fadeIn .3s ease;}
+
+    /* HOME */
+    .hero{background:linear-gradient(135deg,var(--bg),var(--bg2),rgba(45,224,192,.06));padding:50px 20px 36px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(45,224,192,.08) 0%,transparent 70%);pointer-events:none;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(28px,6vw,56px);line-height:1.2;margin-bottom:14px;}
+    .hero h1 span{color:var(--teal);}
+    .hero p{color:var(--text-dim);font-size:15px;max-width:480px;margin:0 auto 26px;line-height:1.7;}
+    .hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+    .btn-p{padding:13px 26px;background:linear-gradient(135deg,var(--teal),var(--teal-dim));border:none;border-radius:30px;color:#0a1628;font-family:'Cinzel',serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;}
+    .btn-p:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(45,224,192,.4);}
+    .btn-s{padding:13px 26px;background:transparent;border:1px solid var(--teal);border-radius:30px;color:var(--teal);font-family:'Cinzel',serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;}
+    .btn-s:hover{background:rgba(45,224,192,.1);}
+    .sec{padding:24px 16px;max-width:1100px;margin:0 auto;}
+    .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+    .sec-title{font-family:'Playfair Display',serif;font-size:20px;}
+    .sec-title span{color:var(--teal);}
+    .see-all{color:var(--teal);font-size:13px;cursor:pointer;}
+    .genre-pills{display:flex;gap:7px;flex-wrap:wrap;padding:14px 16px;}
+    .gp{padding:6px 14px;border-radius:18px;border:1px solid var(--card-border);background:var(--card);color:var(--text-dim);font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .gp:hover,.gp.active{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+    .book-card{background:var(--card);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative;}
+    .book-card:hover{transform:translateY(-5px);border-color:var(--teal);box-shadow:0 10px 28px rgba(45,224,192,.15);}
+    .book-cover{height:190px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg2),rgba(45,224,192,.08));position:relative;}
+    .book-rbadge{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.7);border:1px solid var(--gold);color:var(--gold);font-size:9px;padding:3px 7px;border-radius:8px;z-index:1;font-weight:700;}
+    .book-starred-badge{position:absolute;top:7px;left:7px;background:linear-gradient(135deg,var(--gold),#e0a020);color:#0a1628;font-size:9px;padding:3px 7px;border-radius:8px;z-index:1;font-weight:700;}
+    .book-info{padding:10px 12px;}
+    .book-title{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;line-height:1.3;}
+    .book-author{font-size:11px;color:var(--text-dim);}
+    .book-meta{display:flex;gap:8px;margin-top:6px;font-size:10px;color:var(--text-dim);}
+
+    /* STARRED STRIP */
+    .star-strip{background:linear-gradient(135deg,rgba(45,224,192,.07),rgba(45,224,192,.02));border:1px solid var(--card-border);border-radius:16px;padding:18px 20px;margin:16px 16px 8px;display:flex;align-items:center;gap:18px;overflow:hidden;position:relative;}
+    .star-strip::before{content:'⭐ FEATURED';position:absolute;top:10px;right:14px;font-size:9px;color:var(--gold);letter-spacing:2px;font-weight:700;}
+    .hl-cover{font-size:56px;flex-shrink:0;}
+    .hl-info h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:5px;}
+    .hl-info p{color:var(--text-dim);font-size:13px;line-height:1.6;margin-bottom:10px;}
+    .hl-tags{display:flex;gap:5px;flex-wrap:wrap;}
+    .hl-tag{padding:3px 9px;background:rgba(45,224,192,.1);border:1px solid var(--teal);color:var(--teal);border-radius:10px;font-size:10px;}
+
+    /* READING */
+    .read-toolbar{position:sticky;top:58px;z-index:100;background:rgba(10,22,40,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--card-border);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .rs-btn{padding:5px 10px;border-radius:7px;border:1px solid var(--card-border);background:transparent;color:var(--text-dim);cursor:pointer;font-size:12px;transition:all .2s;}
+    .rs-btn:hover,.rs-btn.on{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .prog-bar{height:3px;background:rgba(45,224,192,.2);}
+    .prog-fill{height:100%;background:var(--teal);transition:width .3s;}
+    .read-wrap{max-width:700px;margin:0 auto;padding:36px 20px;}
+    .read-wrap.fs-sm{font-size:15px;}.read-wrap.fs-lg{font-size:20px;}.read-wrap.fs-xl{font-size:23px;}
+    .read-wrap.t-sepia{background:#1a1208;color:#c8b090;}.read-wrap.t-light{background:#f0ece4;color:#2a2018;}
+    .read-wrap h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:18px;color:var(--teal);}
+    .read-wrap p{margin-bottom:18px;line-height:1.9;font-size:17px;}
+    .action-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 20px 16px;}
+    .act-btn{display:flex;align-items:center;gap:5px;padding:9px 14px;border-radius:18px;border:1px solid var(--card-border);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;transition:all .2s;font-family:'Lora',serif;}
+    .act-btn:hover{border-color:var(--teal);color:var(--teal);}
+    .act-btn.liked{color:var(--danger);border-color:var(--danger);}
+    .act-btn.bkd{color:var(--gold);border-color:var(--gold);}
+    .tip-box{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px;margin:0 20px 20px;max-width:680px;margin-left:auto;margin-right:auto;}
+    .tip-box h4{font-family:'Cinzel',serif;color:var(--teal);margin-bottom:10px;font-size:14px;}
+    .tip-amts{display:flex;gap:7px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;}
+    .ta{padding:9px 14px;border:1px solid var(--card-border);border-radius:9px;background:transparent;color:var(--text);cursor:pointer;font-size:13px;transition:all .2s;}
+    .ta:hover,.ta.sel{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .tip-btns{display:flex;gap:8px;justify-content:center;}
+    .btn-pp{padding:11px 18px;background:#003087;border:none;border-radius:9px;color:#fff;cursor:pointer;font-size:13px;font-weight:700;}
+    .btn-pp:hover{background:#001f5a;}
+    .btn-cc{padding:11px 18px;background:linear-gradient(135deg,var(--teal),var(--teal-dim));border:none;border-radius:9px;color:#0a1628;cursor:pointer;font-size:13px;font-weight:700;}
+    .chap-nav{display:flex;justify-content:space-between;padding:14px 20px;max-width:700px;margin:0 auto;}
+    .comments-sec{max-width:700px;margin:0 auto;padding:0 20px 40px;}
+    .comments-sec h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:14px;}
+    .cmt-input-wrap{display:flex;gap:8px;margin-bottom:18px;}
+    .cmt-input{flex:1;padding:11px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Lora',serif;font-size:13px;outline:none;resize:none;}
+    .cmt-input:focus{border-color:var(--teal);}
+    .btn-cmt{padding:11px 16px;background:var(--teal);border:none;border-radius:10px;color:#0a1628;cursor:pointer;font-weight:700;font-size:12px;}
+    .cmt{display:flex;gap:10px;margin-bottom:14px;}
+    .cmt-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dim));display:flex;align-items:center;justify-content:center;font-weight:700;color:#0a1628;font-size:12px;flex-shrink:0;}
+    .cmt-body{flex:1;}
+    .cmt-author{font-size:12px;font-weight:600;color:var(--teal);margin-bottom:3px;}
+    .cmt-text{font-size:13px;line-height:1.5;}
+    .cmt-acts{display:flex;gap:10px;margin-top:5px;}
+    .cmt-act{font-size:11px;color:var(--text-dim);cursor:pointer;}
+    .cmt-act:hover{color:var(--teal);}
+
+    /* WRITEWELL */
+    .ww-header{background:linear-gradient(135deg,#0a1f0d,#1a3320);border-bottom:1px solid rgba(74,222,128,.2);padding:28px 20px;text-align:center;}
+    .ww-header h1{font-family:'Cinzel',serif;font-size:26px;color:#4ade80;text-shadow:0 0 15px rgba(74,222,128,.4);margin-bottom:6px;}
+    .ww-header p{color:#86efac;font-size:13px;}
+    .ww-con{max-width:880px;margin:0 auto;padding:26px 16px;}
+    .ed-toolbar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;padding:8px;background:var(--card);border:1px solid var(--card-border);border-radius:8px;}
+    .ed-btn{padding:5px 9px;background:transparent;border:1px solid var(--card-border);border-radius:5px;color:var(--text);cursor:pointer;font-size:12px;transition:all .2s;}
+    .ed-btn:hover{background:var(--teal);color:#0a1628;border-color:var(--teal);}
+    .ed-area{width:100%;min-height:360px;padding:18px;background:rgba(255,255,255,.03);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Lora',serif;font-size:15px;line-height:1.8;outline:none;resize:vertical;}
+    .ed-area:focus{border-color:#4ade80;}
+    .pub-form{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:16px;}
+    .pub-form .full{grid-column:1/-1;}
+    .pi,.ps{width:100%;padding:11px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:9px;color:var(--text);font-family:'Lora',serif;font-size:13px;outline:none;}
+    .pi:focus,.ps:focus{border-color:#4ade80;}
+    .ps option{background:#0f1e35;}
+    .btn-pub{padding:13px 28px;background:linear-gradient(135deg,#4ade80,#22c55e);border:none;border-radius:11px;color:#0a1628;font-family:'Cinzel',serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;}
+    .btn-pub:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(74,222,128,.4);}
+    .btn-dft{padding:13px 22px;background:transparent;border:1px solid var(--card-border);border-radius:11px;color:var(--text-dim);font-family:'Cinzel',serif;font-size:13px;cursor:pointer;}
+    .dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:26px;}
+    .stat-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:18px;text-align:center;}
+    .stat-num{font-family:'Playfair Display',serif;font-size:26px;color:var(--teal);font-weight:900;}
+    .stat-lbl{font-size:11px;color:var(--text-dim);margin-top:3px;text-transform:uppercase;letter-spacing:1px;}
+
+    /* PROFILE */
+    .prof-hdr{background:linear-gradient(135deg,var(--bg),var(--bg2));padding:36px 20px 26px;border-bottom:1px solid var(--card-border);display:flex;gap:18px;align-items:center;flex-wrap:wrap;max-width:880px;margin:0 auto;}
+    .prof-av{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dim));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#0a1628;border:3px solid var(--teal);flex-shrink:0;}
+    .prof-info h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:5px;}
+    .prof-bio{color:var(--text-dim);font-size:13px;line-height:1.6;margin-bottom:10px;}
+    .prof-stats{display:flex;gap:18px;font-size:12px;}
+    .ps-item strong{color:var(--teal);font-size:15px;display:block;}
+    .ps-item span{color:var(--text-dim);}
+    .btn-follow{padding:9px 22px;background:var(--teal);border:none;border-radius:18px;color:#0a1628;font-weight:700;cursor:pointer;font-size:12px;}
+    .btn-follow.fing{background:transparent;border:1px solid var(--teal);color:var(--teal);}
+    .shelf-tabs{display:flex;gap:0;border-bottom:1px solid var(--card-border);padding:0 16px;max-width:880px;margin:0 auto;overflow-x:auto;}
+    .s-tab{padding:12px 16px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-size:13px;border-bottom:2px solid transparent;transition:all .2s;font-family:'Lora',serif;white-space:nowrap;}
+    .s-tab.active,.s-tab:hover{color:var(--teal);border-bottom-color:var(--teal);}
+
+    /* ADMIN */
+    .admin-hdr{background:linear-gradient(135deg,#1a0505,#2d0a0a);border-bottom:1px solid rgba(224,85,85,.3);padding:22px 20px;}
+    .admin-hdr h1{font-family:'Cinzel',serif;font-size:22px;color:var(--danger);}
+    .admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--card-border);padding:0 16px;overflow-x:auto;}
+    .at{padding:11px 16px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-size:12px;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;font-family:'Lora',serif;}
+    .at.active{color:var(--danger);border-bottom-color:var(--danger);}
+    .admin-con{padding:22px 16px;max-width:960px;margin:0 auto;}
+    .a-sec{display:none;}.a-sec.active{display:block;}
+    .dt{width:100%;border-collapse:collapse;}
+    .dt th{text-align:left;padding:11px 14px;background:rgba(224,85,85,.1);color:var(--danger);font-size:11px;letter-spacing:1px;text-transform:uppercase;}
+    .dt td{padding:11px 14px;border-bottom:1px solid var(--card-border);font-size:13px;}
+    .dt tr:hover td{background:rgba(255,255,255,.02);}
+    .badge{padding:3px 9px;border-radius:8px;font-size:10px;font-weight:700;}
+    .bm{background:rgba(45,224,192,.15);color:var(--teal);}
+    .bu{background:rgba(138,184,200,.15);color:var(--text-dim);}
+    .bb{background:rgba(224,85,85,.15);color:var(--danger);}
+    .btn-ap{padding:5px 12px;background:var(--teal);border:none;border-radius:7px;color:#0a1628;cursor:pointer;font-size:11px;font-weight:700;}
+    .btn-ban{padding:5px 12px;background:rgba(224,85,85,.2);border:1px solid var(--danger);border-radius:7px;color:var(--danger);cursor:pointer;font-size:11px;}
+    .tip-total{font-family:'Playfair Display',serif;font-size:34px;color:var(--gold);margin:16px 0 4px;}
+
+    /* MOD */
+    .mod-hdr{background:linear-gradient(135deg,#0a1020,#1a2035);border-bottom:1px solid rgba(45,224,192,.2);padding:22px 20px;}
+    .mod-hdr h1{font-family:'Cinzel',serif;font-size:21px;color:var(--teal);}
+
+
+    .msg-box{background:linear-gradient(145deg,#0f1e35,#1a2d4a);border:1px solid var(--card-border);border-radius:18px;padding:28px;width:min(440px,92vw);}
+    .msg-box h3{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:14px;color:var(--teal);}
+    .msg-ta{width:100%;padding:13px;background:var(--card);border:1px solid var(--card-border);border-radius:9px;color:var(--text);font-family:'Lora',serif;font-size:13px;outline:none;resize:none;min-height:110px;margin-bottom:14px;}
+    .msg-ta:focus{border-color:var(--teal);}
+    .msg-acts{display:flex;gap:8px;justify-content:flex-end;}
+    .btn-cancel{padding:9px 18px;background:transparent;border:1px solid var(--card-border);border-radius:9px;color:var(--text-dim);cursor:pointer;font-size:12px;}
+    .btn-send{padding:9px 18px;background:var(--teal);border:none;border-radius:9px;color:#0a1628;font-weight:700;cursor:pointer;font-size:12px;}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,var(--teal),var(--teal-dim));color:#0a1628;padding:12px 22px;border-radius:28px;font-weight:700;font-size:13px;z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;}
+    #toast.show{transform:translateX(-50%) translateY(0);}
+
+    /* BOTTOM NAV */
+    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,22,40,.97);border-top:1px solid var(--card-border);z-index:998;padding:7px 0 10px;}
+    .bnav-inner{display:flex;justify-content:space-around;}
+    .bni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:3px 10px;color:var(--text-dim);font-size:10px;transition:color .2s;}
+    .bni.active,.bni:hover{color:var(--teal);}
+    .bni-ico{font-size:20px;}
+
+    @media(max-width:640px){
+      .bnav{display:block;}
+      .page{padding-bottom:68px;}
+      .nav-search{display:none;}
+      .pub-form{grid-template-columns:1fr;}
+    }
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px;}
+    .hidden{display:none!important;}
+  </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-stars" id="splashStars"></div>
+  <div class="cacc tl"></div><div class="cacc tr"></div><div class="cacc bl"></div><div class="cacc br"></div>
+  <div>
+    <div class="bounce-text">
+      <span>R</span><span>e</span><span>a</span><span>d</span><span>W</span><span>e</span><span>l</span><span>l</span>
+    </div>
+    <div class="shadow-row">
+      <div class="lshadow"></div><div class="lshadow"></div><div class="lshadow"></div><div class="lshadow"></div>
+      <div class="lshadow"></div><div class="lshadow"></div><div class="lshadow"></div><div class="lshadow"></div>
+    </div>
+    <p class="splash-tagline">Read freely. Write boldly.</p>
+    <div class="splash-dots"><div class="sdot"></div><div class="sdot"></div><div class="sdot"></div></div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal">
+  <div class="login-box">
+    <div class="login-logo">📖 ReadWell</div>
+    <div class="login-sub">Read freely. Write boldly.</div>
+    <div class="role-tabs">
+      <button class="role-tab active" data-role="user">👤 Reader</button>
+      <button class="role-tab" data-role="writer">✍️ Writer</button>
+      <button class="role-tab" data-role="moderator">🛡 Mod</button>
+      <button class="role-tab" data-role="admin">⚙️ Admin</button>
+    </div>
+    <div class="fg"><label>Username</label><input type="text" id="lu" placeholder="Enter username"/></div>
+    <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="Enter password"/></div>
+    <button class="btn-login" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="lerr">Invalid credentials. Try again.</div>
+    <div class="login-switch">No account? <a onclick="showToast('Registration coming soon! 🚀')">Sign up free</a></div>
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div id="msgModal">
+  <div class="msg-box">
+    <h3>💬 Message Author</h3>
+    <textarea class="msg-ta" id="msgTxt" placeholder="Write your message..."></textarea>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Want to include a tip? Scroll to the tip section below ☕</p>
+    <div class="msg-acts">
+      <button class="btn-cancel" onclick="closeM('msgModal')">Cancel</button>
+      <button class="btn-send" onclick="sendMsg()">Send ✉️</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP NAV -->
+<nav id="topNav">
+  <div class="nav-logo" onclick="goPage('home')">📖 ReadWell</div>
+  <input class="nav-search" type="text" placeholder="Search books, authors..." id="si" oninput="handleSearch(this.value)"/>
+  <div class="nav-right">
+    <button class="nbtn ww" onclick="goPage('writewell')">✍️ WriteWell</button>
+    <button class="nbtn" id="loginBtn" onclick="openM('loginModal')">Sign In</button>
+    <div class="nav-av hidden" id="navAv"><span id="navAvLetter">U</span><div class="av-drop"><a onclick="goPage('profile')">👤 My Profile</a><a onclick="goPage('writewell')">✍️ WriteWell</a><a onclick="goPage('profile')">🔖 My Shelves</a><a class="lo" onclick="doLogout()">🚪 Log Out</a></div></div>
+  </div>
+</nav>
+
+<!-- PAGES -->
+
+<!-- HOME -->
+<div class="page active" id="home">
+  <div class="hero">
+    <h1>Your World of <span>Stories</span><br/>Starts Here</h1>
+    <p>Discover free fiction and non-fiction. Support emerging writers. Read without limits.</p>
+    <div class="hero-btns">
+      <button class="btn-p" onclick="scrollToBooks()">🔥 Explore Books</button>
+      <button class="btn-s" onclick="goPage('writewell')">✍️ Start Writing</button>
+    </div>
+  </div>
+  <!-- Featured -->
+  <div class="star-strip">
+    <div class="hl-cover">🏰</div>
+    <div class="hl-info">
+      <h2>The Last Archive</h2>
+      <p>A librarian discovers the world's last repository of forbidden knowledge — and the price of knowing too much.</p>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;">by <span style="color:var(--teal)">Amara O.</span> · 342 reads · ⭐ 4.8</div>
+      <div class="hl-tags"><span class="hl-tag">Fantasy</span><span class="hl-tag">PG-13</span><span class="hl-tag">Series</span></div>
+      <button class="btn-p" style="margin-top:12px;padding:9px 18px;font-size:12px;" onclick="openBook({title:'The Last Archive',author:'Amara O.',emoji:'🏰'})">Start Reading</button>
+    </div>
+  </div>
+  <!-- Genres -->
+  <div class="genre-pills" id="genrePills">
+    <div class="gp active" onclick="filterGenre(this,'All')">All</div>
+    <div class="gp" onclick="filterGenre(this,'Fantasy')">🏰 Fantasy</div>
+    <div class="gp" onclick="filterGenre(this,'Sci-Fi')">🚀 Sci-Fi</div>
+    <div class="gp" onclick="filterGenre(this,'Romance')">💕 Romance</div>
+    <div class="gp" onclick="filterGenre(this,'Thriller')">🔪 Thriller</div>
+    <div class="gp" onclick="filterGenre(this,'Horror')">👻 Horror</div>
+    <div class="gp" onclick="filterGenre(this,'Non-Fiction')">📚 Non-Fiction</div>
+    <div class="gp" onclick="filterGenre(this,'Research')">🔬 Research</div>
+    <div class="gp" onclick="filterGenre(this,'Historical')">🌍 Historical</div>
+    <div class="gp" onclick="filterGenre(this,'Poetry')">✍️ Poetry</div>
+  </div>
+  <!-- Trending -->
+  <div class="sec" id="booksSection">
+    <div class="sec-hdr"><div class="sec-title">🔥 <span>Trending</span></div><span class="see-all">See all</span></div>
+    <div class="books-grid" id="trendingGrid"></div>
+  </div>
+  <!-- New -->
+  <div class="sec">
+    <div class="sec-hdr"><div class="sec-title">✨ <span>New</span> Releases</div><span class="see-all">See all</span></div>
+    <div class="books-grid" id="newGrid"></div>
+  </div>
+  <!-- Prompts -->
+  <div class="sec">
+    <div class="sec-hdr"><div class="sec-title">💡 <span>Writing</span> Prompts</div><span class="see-all" onclick="goPage('writewell')">Write →</span></div>
+    <div id="promptsList"></div>
+  </div>
+</div>
+
+<!-- SEARCH PAGE -->
+<div class="page" id="searchPage">
+  <div style="max-width:860px;margin:0 auto;padding:20px 16px;">
+    <h2 style="font-family:'Playfair Display',serif;margin-bottom:18px;">Results for "<span id="searchTerm" style="color:var(--teal)"></span>"</h2>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<!-- READING PAGE -->
+<div class="page" id="readingPage">
+  <div class="read-toolbar">
+    <button class="rs-btn" onclick="goPage('home')">← Back</button>
+    <button class="rs-btn" onclick="setFont('sm')">A-</button>
+    <button class="rs-btn on" onclick="setFont('md')">A</button>
+    <button class="rs-btn" onclick="setFont('lg')">A+</button>
+    <button class="rs-btn" onclick="setTheme('dark')">🌙</button>
+    <button class="rs-btn" onclick="setTheme('sepia')">📜</button>
+    <button class="rs-btn" onclick="setTheme('light')">☀️</button>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="read-wrap" id="readWrap">
+    <h2 id="chapTitle">Chapter 1: The First Shelf</h2>
+    <div id="chapBody"></div>
+  </div>
+  <!-- Actions -->
+  <div class="action-bar">
+    <button class="act-btn" id="likeBtn" onclick="toggleLike()">❤️ <span id="likeCount">124</span></button>
+    <button class="act-btn" id="bkmBtn" onclick="toggleBkm()">🔖 Bookmark</button>
+    <button class="act-btn" onclick="openM('msgModal')">💬 Message</button>
+    <button class="act-btn" onclick="followAuthor()">+ Follow</button>
+    <button class="act-btn" onclick="reportContent()">⚑ Report</button>
+  </div>
+  <!-- TIP / BUY ME A COFFEE — end of chapter -->
+  <div class="tip-box">
+    <h4>☕ Buy the Author a Coffee</h4>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Enjoyed this chapter? Support <strong style="color:var(--teal)" id="authName">the author</strong>! Min. $2 · 90% goes to them directly.</p>
+    <div class="tip-amts">
+      <button class="ta sel" onclick="selTip(this,2)">$2</button>
+      <button class="ta" onclick="selTip(this,5)">$5</button>
+      <button class="ta" onclick="selTip(this,10)">$10</button>
+      <button class="ta" onclick="selTip(this,20)">$20</button>
+    </div>
+    <div class="tip-btns">
+      <button class="btn-pp" onclick="doTip('PayPal')">💙 PayPal</button>
+      <button class="btn-cc" onclick="doTip('Card')">💳 Card</button>
+    </div>
+  </div>
+  <!-- Chapter nav -->
+  <div class="chap-nav">
+    <button class="btn-s" style="padding:9px 18px;font-size:12px;" onclick="prevChap()">← Prev</button>
+    <span style="color:var(--text-dim);font-size:12px;align-self:center;" id="chapIndicator">Ch 1 of 12</span>
+    <button class="btn-p" style="padding:9px 18px;font-size:12px;" onclick="nextChap()">Next →</button>
+  </div>
+  <!-- Comments -->
+  <div class="comments-sec">
+    <h3>💬 Comments (<span id="cmtCount">3</span>)</h3>
+    <div class="cmt-input-wrap">
+      <textarea class="cmt-input" id="newCmt" rows="2" placeholder="Share your thoughts..."></textarea>
+      <button class="btn-cmt" onclick="postCmt()">Post</button>
+    </div>
+    <div id="cmtList"></div>
+  </div>
+</div>
+
+<!-- WRITEWELL PAGE -->
+<div class="page" id="writewellPage">
+  <div class="ww-header">
+    <h1>✍️ WriteWell</h1>
+    <p>Your publishing studio. Write, schedule, and share your stories.</p>
+  </div>
+  <div class="ww-con">
+    <div id="writerDash" class="hidden">
+      <h2 style="font-family:'Playfair Display',serif;margin-bottom:18px;">📊 Dashboard</h2>
+      <div class="dash-stats">
+        <div class="stat-card"><div class="stat-num">1,240</div><div class="stat-lbl">Total Reads</div></div>
+        <div class="stat-card"><div class="stat-num">84</div><div class="stat-lbl">Followers</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--gold)">$18.90</div><div class="stat-lbl">Tips Earned</div></div>
+        <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Published</div></div>
+      </div>
+    </div>
+    <h2 style="font-family:'Playfair Display',serif;margin-bottom:18px;">📝 Write New Chapter</h2>
+    <div class="pub-form">
+      <input class="pi full" id="pubTitle" type="text" placeholder="Work title..."/>
+      <select class="ps" id="pubGenre"><option value="">Genre</option><option>Fantasy</option><option>Sci-Fi</option><option>Romance</option><option>Thriller</option><option>Horror</option><option>Non-Fiction</option><option>Research</option><option>Historical</option><option>Drama</option><option>Poetry</option></select>
+      <select class="ps" id="pubRating"><option value="">Age Rating</option><option>G</option><option>PG</option><option>PG-13</option><option>18+</option></select>
+      <input class="pi full" id="pubSeries" type="text" placeholder="Series name (leave blank for standalone)"/>
+      <input class="pi" id="pubChap" type="text" placeholder="Chapter title..."/>
+      <input class="pi" id="pubSched" type="datetime-local" title="Schedule post"/>
+      <input class="pi full" id="pubTags" type="text" placeholder="Tags: magic, adventure, dragons..."/>
+    </div>
+    <div class="ed-toolbar">
+      <button class="ed-btn" onclick="fmt('bold')"><b>B</b></button>
+      <button class="ed-btn" onclick="fmt('italic')"><i>I</i></button>
+      <button class="ed-btn" onclick="fmt('underline')"><u>U</u></button>
+      <button class="ed-btn" onclick="fmt('insertOrderedList')">1.</button>
+      <button class="ed-btn" onclick="fmt('insertUnorderedList')">•</button>
+      <button class="ed-btn" onclick="fmt('formatBlock','h2')">H2</button>
+      <button class="ed-btn" onclick="fmt('formatBlock','blockquote')">" "</button>
+      <button class="ed-btn" onclick="clearEd()">🗑</button>
+      <span style="font-size:11px;color:var(--text-dim);margin-left:auto;align-self:center;" id="saveLabel"></span>
+    </div>
+    <div class="ed-area" id="edArea" contenteditable="true"></div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn-pub" onclick="publishWork()">🚀 Publish</button>
+      <button class="btn-dft" onclick="saveDraft()">💾 Draft</button>
+    </div>
+    <div style="margin-top:36px;">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;">📄 Drafts</h3>
+      <div id="draftsList"><p style="color:var(--text-dim);font-style:italic;font-size:13px;">No drafts yet.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page" id="profilePage">
+  <div class="prof-hdr">
+    <div class="prof-av" id="profAv">U</div>
+    <div>
+      <h2 id="profName">Your Name</h2>
+      <p class="prof-bio">Reader & explorer of worlds. Passionate about great stories.</p>
+      <div class="prof-stats">
+        <div class="ps-item"><strong>12</strong><span>Books Read</span></div>
+        <div class="ps-item"><strong>3</strong><span>Following</span></div>
+        <div class="ps-item"><strong>1</strong><span>Followers</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="shelf-tabs">
+    <button class="s-tab active" onclick="switchShelf(this,'reading')">📖 Reading</button>
+    <button class="s-tab" onclick="switchShelf(this,'finished')">✅ Finished</button>
+    <button class="s-tab" onclick="switchShelf(this,'want')">📌 Want to Read</button>
+    <button class="s-tab" onclick="switchShelf(this,'bkm')">🔖 Bookmarks</button>
+  </div>
+  <div class="sec" id="shelfCon"><p style="color:var(--text-dim);font-style:italic;">Start reading to fill your shelves! 📚</p></div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page hidden" id="adminPage">
+  <div class="admin-hdr">
+    <h1>⚙️ Admin Panel</h1>
+    <p style="color:rgba(224,85,85,.7);font-size:12px;margin-top:3px;">Full platform control — Majikworks</p>
+  </div>
+  <div class="admin-tabs">
+    <button class="at active" onclick="aTab(this,'aUsers')">👥 Users</button>
+    <button class="at" onclick="aTab(this,'aTips')">💰 Revenue</button>
+    <button class="at" onclick="aTab(this,'aContent')">📚 Content</button>
+    <button class="at" onclick="aTab(this,'aStar')">⭐ Starred</button>
+    <button class="at" onclick="aTab(this,'aSettings')">🔧 Settings</button>
+  </div>
+  <div class="admin-con">
+    <div class="a-sec active" id="aUsers">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;">All Users</h3>
+      <div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Username</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody id="usersBody"></tbody></table></div>
+    </div>
+    <div class="a-sec" id="aTips">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:6px;">Platform Revenue</h3>
+      <p style="font-size:12px;color:var(--text-dim);">Total platform earnings (10% of all tips)</p>
+      <div class="tip-total" id="platRev">$0.00</div>
+      <div style="overflow-x:auto;"><table class="dt" style="margin-top:16px;"><thead><tr><th>Date</th><th>Reader</th><th>Writer</th><th>Amount</th><th>Cut (10%)</th></tr></thead><tbody id="tipsBody"></tbody></table></div>
+    </div>
+    <div class="a-sec" id="aContent">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;">Published Works</h3>
+      <div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Rating</th><th>Actions</th></tr></thead><tbody id="contentBody"></tbody></table></div>
+    </div>
+    <div class="a-sec" id="aStar">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:12px;">⭐ Featured Works</h3>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;">Writers pay to be featured OR admin stars trending works manually.</p>
+      <div id="starredList"></div>
+    </div>
+    <div class="a-sec" id="aSettings">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:18px;">Settings</h3>
+      <div class="fg" style="max-width:360px;"><label>Season Theme</label>
+        <select class="ps" onchange="setSeason(this.value)"><option value="auto">Auto (by calendar)</option><option value="spring">🌸 Spring</option><option value="summer">☀️ Summer</option><option value="autumn">🍂 Autumn</option><option value="winter">❄️ Winter</option></select>
+      </div>
+      <div class="fg" style="max-width:360px;margin-top:14px;"><label>Platform PayPal</label><input class="pi" type="email" value="admin@readwell.com"/></div>
+      <div class="fg" style="max-width:360px;margin-top:14px;"><label>Tip Split (Platform %)</label><input class="pi" type="number" value="10" min="5" max="30"/></div>
+      <button class="btn-pub" style="margin-top:12px;padding:11px 22px;font-size:13px;" onclick="showToast('Settings saved! ✅')">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODERATOR PAGE -->
+<div class="page hidden" id="modPage">
+  <div class="mod-hdr">
+    <h1>🛡 Moderator Panel</h1>
+    <p style="color:var(--text-dim);font-size:12px;margin-top:3px;">Review reports and manage content</p>
+  </div>
+  <div class="admin-con">
+    <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;">📋 Reports</h3>
+    <div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Type</th><th>Content</th><th>Reporter</th><th>Reason</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>Comment</td><td>"Offensive remark..."</td><td>user_42</td><td>Harassment</td><td><button class="btn-ban" onclick="showToast('Removed ✅')">Remove</button></td></tr>
+      <tr><td>Book</td><td>"Dark Desires"</td><td>user_18</td><td>Wrong rating</td><td><button class="btn-ban" onclick="showToast('Sent to review 📋')">Review</button></td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <div class="bnav-inner">
+    <div class="bni active" onclick="goPage('home');setBni(this)"><div class="bni-ico">🏠</div>Home</div>
+    <div class="bni" onclick="goPage('searchPage');setBni(this)"><div class="bni-ico">🔍</div>Search</div>
+    <div class="bni" onclick="goPage('writewell');setBni(this)"><div class="bni-ico">✍️</div>Write</div>
+    <div class="bni" onclick="goPage('profile');setBni(this)"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<div id="toast">✅ Done!</div>
+
+<script>
+// STATE
+const S = {
+  user:null,role:null,tip:2,chap:1,totalChaps:12,
+  liked:false,bkmd:false,tips:[],platRev:0,
+  drafts:[],
+  users:[
+    {n:'Majikworks',r:'admin',j:'2025-01-01',s:'active'},
+    {n:'Amara_O',r:'writer',j:'2025-03-10',s:'active'},
+    {n:'BookLover99',r:'user',j:'2025-04-15',s:'active'},
+    {n:'NightReader',r:'user',j:'2025-05-20',s:'active'},
+    {n:'ScribbleMaster',r:'writer',j:'2025-06-01',s:'active'},
+  ],
+  books:[
+    {t:'The Last Archive',a:'Amara O.',g:'Fantasy',r:'PG-13',e:'🏰',reads:342,star:4.8,feat:true},
+    {t:'Echoes of Mars',a:'Kai Zhen',g:'Sci-Fi',r:'PG',e:'🚀',reads:210,star:4.5,feat:false},
+    {t:'Whispers at Dawn',a:'Lena Moore',g:'Romance',r:'PG-13',e:'💕',reads:189,star:4.7,feat:false},
+    {t:'Code Red Protocol',a:'Dev Sharma',g:'Thriller',r:'18+',e:'🔪',reads:156,star:4.3,feat:false},
+    {t:'The Hollow Hours',a:'Sade Adeyemi',g:'Horror',r:'18+',e:'👻',reads:98,star:4.1,feat:true},
+    {t:'Roots & Routes',a:'Yemi Abiodun',g:'Non-Fiction',r:'G',e:'📚',reads:445,star:4.9,feat:true},
+  ],
+  cmts:[
+    {u:'BookLover99',txt:'This chapter had me holding my breath! Incredible world-building.'},
+    {u:'NightReader',txt:"Amara never misses. Chapter 1 and I'm already obsessed."},
+    {u:'ScribbleMaster',txt:'The prose is just *chef\'s kiss*. I aspire to write like this.'},
+  ],
+  prompts:[
+    'A librarian discovers every book she shelves contains a different ending than when it was written.',
+    'Write a romance set entirely through the annotations left in a secondhand book.',
+    'The last human on Earth finds an alien\'s diary written in perfect English.',
+  ],
+};
+
+const chapContent = [
+  `The dust had settled on the last shelf of the world's final archive when Mara first noticed the book that wasn't supposed to exist.\n\nIt sat between a leather-bound atlas of lost seas and a crumbling treatise on forbidden alchemies — ordinary enough in a place like this — except that its spine bore no title, no author, no year. Just a symbol: a circle eating its own tail.\n\nMara reached for it with the careful hands of a woman who had spent thirty years preserving things too fragile for the light. The moment her fingertips touched the cover, the archive went silent. Not quiet. Silent. The hum of the ancient ventilation system, the distant shuffle of her colleague's footsteps — all of it, gone.`,
+  `She didn't open the book that night. She wasn't ready — and some part of her, the part that had survived thirty years in the archive, knew that readiness mattered here.\n\nInstead she made tea. She sat at her small desk beneath the window that looked out onto the courtyard where no one walked anymore, and she thought about the circle eating its own tail.\n\nOuroboros. That was the word. Eternal return. The end that is also a beginning. Time folding back on itself like cloth.\n\nAt midnight she finally opened the cover. The first page read: Hello, Mara. We've been waiting for you to find this.`,
+];
+
+// INIT
+window.addEventListener('load',()=>{
+  // Stars
+  const se=document.getElementById('splashStars');
+  for(let i=0;i<50;i++){const s=document.createElement('div');s.className='splash-star';const z=Math.random()*2+1;s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s;`;se.appendChild(s);}
+  autoSeason();
+  setTimeout(()=>{document.getElementById('splash').classList.add('hide');setTimeout(()=>document.getElementById('splash').style.display='none',800);},3000);
+  renderBooks();renderPrompts();renderCmts();renderAdminData();
+  try{const sv=localStorage.getItem('rw_s');if(sv){const d=JSON.parse(sv);loginOk(d.u,d.r);}}catch(e){}
+});
+
+function autoSeason(){
+  const m=new Date().getMonth();
+  let s='winter';
+  if(m>=2&&m<=4)s='spring';
+  else if(m>=5&&m<=7)s='summer';
+  else if(m>=8&&m<=10)s='autumn';
+  setSeason(s);
+}
+function setSeason(v){document.body.className=v==='auto'?'':v;}
+
+// AUTH
+function openM(id){document.getElementById(id).classList.add('show');}
+function closeM(id){document.getElementById(id).classList.remove('show');}
+
+document.querySelectorAll('.role-tab').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.role-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');});});
+
+function doLogin(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value.trim();
+  const r=document.querySelector('.role-tab.active').dataset.role;
+  const err=document.getElementById('lerr');
+  err.style.display='none';
+  if(r==='admin'){if(u==='Majikworks'&&p==='Starapp')loginOk(u,r);else{err.style.display='block';return;}}
+  else if(r==='moderator'){const m=S.users.find(x=>x.n===u&&x.r==='moderator');if(m)loginOk(u,r);else{err.style.display='block';return;}}
+  else{if(u&&p)loginOk(u,r);else{err.style.display='block';return;}}
+}
+
+function loginOk(u,r){
+  S.user=u;S.role=r;
+  closeM('loginModal');
+  document.getElementById('loginBtn').classList.add('hidden');
+  const av=document.getElementById('navAv');av.classList.remove('hidden');
+  document.getElementById('navAvLetter').textContent=u[0].toUpperCase();
+  document.getElementById('profName').textContent=u;
+  document.getElementById('profAv').textContent=u[0].toUpperCase();
+  if(r==='admin'){document.getElementById('adminPage').classList.remove('hidden');goPage('admin');}
+  else if(r==='moderator'){document.getElementById('modPage').classList.remove('hidden');goPage('mod');}
+  if(r==='writer'||r==='admin')document.getElementById('writerDash').classList.remove('hidden');
+  showToast(`Welcome back, ${u}! 👋`);
+  try{localStorage.setItem('rw_s',JSON.stringify({u,r}));}catch(e){}
+}
+
+// PAGES
+const PM={home:'home',writewell:'writewellPage',profile:'profilePage',admin:'adminPage',mod:'modPage',reading:'readingPage',searchPage:'searchPage'};
+function goPage(n){
+  Object.values(PM).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  const t=PM[n]||n;const el=document.getElementById(t);if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+}
+function scrollToBooks(){document.getElementById('booksSection').scrollIntoView({behavior:'smooth'});}
+function setBni(el){document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+
+// BOOKS
+function renderBooks(){
+  const tg=document.getElementById('trendingGrid');const ng=document.getElementById('newGrid');
+  S.books.forEach((b,i)=>{const c=mkCard(b);if(i<3)tg.appendChild(c);else ng.appendChild(c);});
+}
+function mkCard(b){
+  const d=document.createElement('div');d.className='book-card';d.onclick=()=>openBook(b);
+  d.innerHTML=`<div class="book-cover">${b.feat?'<div class="book-starred-badge">⭐ STARRED</div>':''}<div class="book-rbadge">${b.r}</div><span style="font-size:50px">${b.e}</span></div><div class="book-info"><div class="book-title">${b.t}</div><div class="book-author">by ${b.a}</div><div class="book-meta"><span>👁 ${b.reads}</span><span>⭐ ${b.star}</span></div></div>`;
+  return d;
+}
+function filterGenre(el,g){
+  document.querySelectorAll('.gp').forEach(p=>p.classList.remove('active'));el.classList.add('active');
+  const tg=document.getElementById('trendingGrid');tg.innerHTML='';
+  const filtered=g==='All'?S.books:S.books.filter(b=>b.g===g);
+  if(!filtered.length){tg.innerHTML=`<p style="color:var(--text-dim);grid-column:1/-1;padding:20px 0;font-style:italic;">No ${g} books yet. Be the first to write one! ✍️</p>`;return;}
+  filtered.forEach(b=>tg.appendChild(mkCard(b)));
+}
+
+// PROMPTS
+function renderPrompts(){
+  const el=document.getElementById('promptsList');
+  S.prompts.forEach(p=>{
+    const d=document.createElement('div');
+    d.style.cssText='background:var(--card);border:1px solid var(--card-border);border-radius:11px;padding:14px 16px;margin-bottom:9px;cursor:pointer;transition:border-color .2s;';
+    d.onmouseover=()=>d.style.borderColor='var(--teal)';d.onmouseout=()=>d.style.borderColor='var(--card-border)';
+    d.innerHTML=`<div style="font-size:11px;color:var(--text-dim);margin-bottom:5px;">💡 Prompt</div><div style="font-size:13px;line-height:1.6;">"${p}"</div><div style="margin-top:8px;font-size:11px;color:var(--teal);cursor:pointer;" onclick="goPage('writewell')">Respond →</div>`;
+    el.appendChild(d);
+  });
+}
+
+// READING
+function openBook(b){
+  if(b)document.getElementById('authName').textContent=b.author||b.a||'the author';
+  goPage('reading');loadChap();
+}
+function loadChap(){
+  const idx=(S.chap-1)%chapContent.length;
+  const titles=['The First Shelf','The Ouroboros','The Price of Knowledge','Into The Dark','The Return','Echoes'];
+  document.getElementById('chapTitle').textContent=`Chapter ${S.chap}: ${titles[(S.chap-1)%titles.length]}`;
+  document.getElementById('chapBody').innerHTML=chapContent[idx].split('\n\n').map(p=>`<p>${p}</p>`).join('');
+  document.getElementById('progFill').style.width=(S.chap/S.totalChaps*100)+'%';
+  document.getElementById('chapIndicator').textContent=`Ch ${S.chap} of ${S.totalChaps}`;
+}
+function nextChap(){if(S.chap<S.totalChaps){S.chap++;loadChap();window.scrollTo(0,0);showToast(`Chapter ${S.chap} ✨`);}else showToast('End of work! ✨');}
+function prevChap(){if(S.chap>1){S.chap--;loadChap();window.scrollTo(0,0);}}
+function setFont(s){const el=document.getElementById('readWrap');['fs-sm','fs-lg','fs-xl'].forEach(c=>el.classList.remove(c));if(s!=='md')el.classList.add('fs-'+s);}
+function setTheme(t){const el=document.getElementById('readWrap');['t-sepia','t-light'].forEach(c=>el.classList.remove(c));if(t!=='dark')el.classList.add('t-'+t);}
+function toggleLike(){S.liked=!S.liked;const b=document.getElementById('likeBtn');const c=document.getElementById('likeCount');b.classList.toggle('liked',S.liked);c.textContent=parseInt(c.textContent)+(S.liked?1:-1);showToast(S.liked?'❤️ Liked!':'Like removed');}
+function toggleBkm(){S.bkmd=!S.bkmd;document.getElementById('bkmBtn').classList.toggle('bkd',S.bkmd);showToast(S.bkmd?'🔖 Bookmarked!':'Bookmark removed');}
+function followAuthor(){showToast('Now following this author! 👤');}
+function reportContent(){showToast('Report submitted to moderators. 📋');}
+
+// TIPS
+function selTip(btn,amt){document.querySelectorAll('.ta').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');S.tip=amt;}
+function doTip(method){
+  if(!S.user){openM('loginModal');return;}
+  const p=(S.tip*0.1).toFixed(2);const w=(S.tip*0.9).toFixed(2);
+  S.platRev+=parseFloat(p);
+  S.tips.push({d:new Date().toLocaleDateString(),rdr:S.user,wtr:document.getElementById('authName').textContent,amt:`$${S.tip}`,cut:`$${p}`});
+  const pr=document.getElementById('platRev');if(pr)pr.textContent=`$${S.platRev.toFixed(2)}`;
+  renderTipsTable();
+  showToast(`☕ $${w} sent via ${method}! Thank you!`);
+}
+
+// COMMENTS
+function renderCmts(){
+  const el=document.getElementById('cmtList');if(!el)return;el.innerHTML='';
+  S.cmts.forEach(c=>{
+    const d=document.createElement('div');d.className='cmt';
+    d.innerHTML=`<div class="cmt-av">${c.u[0].toUpperCase()}</div><div class="cmt-body"><div class="cmt-author">${c.u}</div><div class="cmt-text">${c.txt}</div><div class="cmt-acts"><span class="cmt-act" onclick="showToast('👍')">👍 Helpful</span><span class="cmt-act" onclick="showToast('Reply soon!')">💬 Reply</span><span class="cmt-act" onclick="showToast('Reported 📋')">⚑ Report</span></div></div>`;
+    el.appendChild(d);
+  });
+  const cc=document.getElementById('cmtCount');if(cc)cc.textContent=S.cmts.length;
+}
+function postCmt(){
+  if(!S.user){openM('loginModal');return;}
+  const txt=document.getElementById('newCmt').value.trim();
+  if(!txt){showToast('Write something first!');return;}
+  S.cmts.push({u:S.user,txt});document.getElementById('newCmt').value='';renderCmts();showToast('💬 Comment posted!');
+}
+
+// WRITEWELL
+function fmt(cmd,val){document.getElementById('edArea').focus();document.execCommand(cmd,false,val||null);}
+function clearEd(){if(confirm('Clear editor?'))document.getElementById('edArea').innerHTML='';}
+function saveDraft(){
+  const t=document.getElementById('pubTitle').value||'Untitled';
+  const c=document.getElementById('edArea').innerHTML;
+  S.drafts.push({t,c,d:new Date().toLocaleDateString()});renderDrafts();showToast('💾 Draft saved!');
+}
+function renderDrafts(){
+  const el=document.getElementById('draftsList');
+  if(!S.drafts.length){el.innerHTML='<p style="color:var(--text-dim);font-style:italic;font-size:13px;">No drafts yet.</p>';return;}
+  el.innerHTML='';
+  S.drafts.forEach((d,i)=>{
+    const div=document.createElement('div');
+    div.style.cssText='background:var(--card);border:1px solid var(--card-border);border-radius:9px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;';
+    div.innerHTML=`<div><div style="font-weight:600;font-size:13px;margin-bottom:3px;">${d.t}</div><div style="font-size:11px;color:var(--text-dim);">${d.d}</div></div><button onclick="loadDraft(${i})" style="padding:7px 12px;background:var(--teal);border:none;border-radius:7px;color:#0a1628;cursor:pointer;font-size:11px;font-weight:700;">Load</button>`;
+    el.appendChild(div);
+  });
+}
+function loadDraft(i){document.getElementById('pubTitle').value=S.drafts[i].t;document.getElementById('edArea').innerHTML=S.drafts[i].c;showToast('Draft loaded!');}
+function publishWork(){
+  if(!S.user){openM('loginModal');return;}
+  const t=document.getElementById('pubTitle').value;
+  if(!t){showToast('Add a title first!');return;}
+  S.books.push({t,a:S.user,g:document.getElementById('pubGenre').value||'General',r:document.getElementById('pubRating').value||'G',e:'📝',reads:0,star:0,feat:false});
+  showToast(`🚀 "${t}" published!`);document.getElementById('pubTitle').value='';document.getElementById('edArea').innerHTML='';renderAdminData();
+}
+// Auto-save every 30s
+setInterval(()=>{const ed=document.getElementById('edArea');if(ed&&ed.innerHTML.length>10){document.getElementById('saveLabel').textContent='Auto-saved '+new Date().toLocaleTimeString();}},30000);
+
+// SEARCH
+let stmr;
+function handleSearch(v){
+  clearTimeout(stmr);
+  if(!v.trim()){goPage('home');return;}
+  stmr=setTimeout(()=>{
+    goPage('searchPage');document.getElementById('searchTerm').textContent=v;
+    const res=S.books.filter(b=>b.t.toLowerCase().includes(v.toLowerCase())||b.a.toLowerCase().includes(v.toLowerCase())||b.g.toLowerCase().includes(v.toLowerCase()));
+    const el=document.getElementById('searchResults');el.innerHTML='';
+    if(!res.length){el.innerHTML='<p style="color:var(--text-dim);padding:20px 0;">No results. Try something else!</p>';return;}
+    res.forEach(b=>{const d=document.createElement('div');d.style.cssText='display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--card-border);cursor:pointer;border-radius:9px;transition:background .2s;';d.onmouseover=()=>d.style.background='var(--card)';d.onmouseout=()=>d.style.background='transparent';d.onclick=()=>openBook(b);d.innerHTML=`<div style="font-size:30px;width:48px;height:62px;display:flex;align-items:center;justify-content:center;background:var(--card);border-radius:7px;flex-shrink:0;">${b.e}</div><div><div style="font-family:'Playfair Display',serif;font-size:15px;margin-bottom:3px;">${b.t}</div><div style="font-size:12px;color:var(--text-dim);">by ${b.a} · ${b.g} · ${b.r} · 👁 ${b.reads}</div></div>`;el.appendChild(d);});
+  },300);
+}
+
+// ADMIN
+function aTab(btn,sec){
+  document.querySelectorAll('.at').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.a-sec').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');document.getElementById(sec).classList.add('active');
+}
+function renderAdminData(){
+  const tb=document.getElementById('usersBody');if(!tb)return;tb.innerHTML='';
+  S.users.forEach(u=>{const tr=document.createElement('tr');tr.innerHTML=`<td><strong>${u.n}</strong></td><td><span class="badge ${u.r==='admin'||u.r==='moderator'?'bm':'bu'}">${u.r}</span></td><td>${u.j}</td><td><span class="badge ${u.s==='banned'?'bb':'bu'}">${u.s}</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;">${u.r!=='admin'?`<button class="btn-ap" onclick="appointMod('${u.n}')">Mod</button><button class="btn-ban" onclick="banUser('${u.n}')">Ban</button>`:''}</td>`;tb.appendChild(tr);});
+  const cb=document.getElementById('contentBody');if(cb){cb.innerHTML='';S.books.forEach(b=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${b.e} ${b.t}</td><td>${b.a}</td><td>${b.g}</td><td>${b.r}</td><td><button class="btn-ban" onclick="showToast('Removed ✅')">Remove</button> <button class="btn-ap" onclick="toggleStar(this,'${b.t}')">${b.feat?'Unstar':'⭐ Star'}</button></td>`;cb.appendChild(tr);});}
+  renderTipsTable();renderStarred();
+}
+function renderTipsTable(){const el=document.getElementById('tipsBody');if(!el)return;el.innerHTML='';S.tips.forEach(t=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${t.d}</td><td>${t.rdr}</td><td>${t.wtr}</td><td style="color:var(--gold)">${t.amt}</td><td style="color:var(--teal)">${t.cut}</td>`;el.appendChild(tr);});}
+function renderStarred(){const el=document.getElementById('starredList');if(!el)return;const starred=S.books.filter(b=>b.feat);el.innerHTML=starred.length?starred.map(b=>`<div style="background:var(--card);border:1px solid rgba(240,192,96,.3);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><span>${b.e} <strong>${b.t}</strong> by ${b.a}</span><button class="btn-ban" onclick="toggleStar(null,'${b.t}')">Remove Star</button></div>`).join(''):'<p style="color:var(--text-dim);font-style:italic;font-size:13px;">No starred works yet.</p>';}
+function toggleStar(btn,title){const b=S.books.find(x=>x.t===title);if(b){b.feat=!b.feat;renderAdminData();showToast(b.feat?`⭐ "${title}" starred!`:`Star removed from "${title}"`);}}
+function appointMod(n){const u=S.users.find(x=>x.n===n);if(u){u.r='moderator';renderAdminData();showToast(`${n} is now a Moderator 🛡`);}}
+function banUser(n){const u=S.users.find(x=>x.n===n);if(u){u.s=u.s==='banned'?'active':'banned';renderAdminData();showToast(`${n} ${u.s==='banned'?'banned ❌':'unbanned ✅'}`);}}
+
+// MISC
+function switchShelf(btn,t){document.querySelectorAll('.s-tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('shelfCon').innerHTML='<p style="color:var(--text-dim);font-style:italic;padding:20px 0;">No books here yet. Start exploring! 📚</p>';}
+function sendMsg(){showToast('Message sent! ✉️');closeM('msgModal');document.getElementById('msgTxt').value='';}
+
+function doLogout(){
+  S.user=null;S.role=null;
+  document.getElementById('loginBtn').classList.remove('hidden');
+  document.getElementById('navAv').classList.add('hidden');
+  document.getElementById('navAvLetter').textContent='U';
+  document.getElementById('writerDash').classList.add('hidden');
+  document.getElementById('adminPage').classList.add('hidden');
+  document.getElementById('modPage').classList.add('hidden');
+  try{localStorage.removeItem('rw_s');}catch(e){}
+  goPage('home');
+  showToast('Logged out! See you soon 👋');
+}
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
